@@ -1,0 +1,7 @@
+[run]
+branch = True
+source = os_api_ref
+omit = os_api_ref/openstack/*
+
+[report]
+ignore_errors = True
