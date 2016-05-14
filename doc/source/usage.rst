@@ -61,3 +61,80 @@ BUTTON>.
 
 The entire contents of the ``List Servers`` section will then be
 hidden by default, with a button to open it on demand.
+
+rest_parameters
+---------------
+
+The ``rest_parameters`` stanza is a solution to the problem of tables
+in ``rst``.
+
+A REST API that uses JSON has a large number of structured parameters
+that include type, location (i.e. is this in the query, the header,
+the path, the body?), whether or not this is required, as well as the
+desire to have long description about each one. And, assuming some
+consistent modeling, that parameter will show up in multiple calls. A
+``server_id`` used in the path is always going to have the same
+meaning.
+
+It is natural to want to display this data in a tabular way to show
+all these dimensions. However, tables in RST are quite cumbersome, and
+repeating the same data over and over again is error prone.
+
+``rest_parameters`` solves this by having the inline markup be a yaml
+list of ``name: value`` pairs. ``name`` is the name of the
+parameter. ``value`` is the key to lookup the rest of the details in a
+yaml file, specified in each stanza.
+
+.. code-block:: rst
+
+   .. rest_parameters:: parameters.yaml
+
+      - tenant_id: tenant_id
+      - changes-since: changes-since
+      - image: image_query
+      - flavor: flavor_query
+      - name: server_name_query
+      - status: server_status_query
+      - host: host_query
+      - limit: limit
+      - marker: marker
+
+And corresponding entries in ``parameters.yaml``:
+
+.. code-block:: yaml
+
+   tenant_id:
+     description: |
+       The UUID of the tenant in a multi-tenancy cloud.
+     in: path
+     required: true
+     type: string
+   ...
+   changes-since:
+     description: |
+       Filters the response by a date and time when the image last changed status.
+       Use this query parameter to check for changes since a previous request rather
+       than re-downloading and re-parsing the full status at each polling interval.
+       If data has changed, the call returns only the items changed since the ``changes-since``
+       time. If data has not changed since the ``changes-since`` time, the call returns an
+       empty list.\nTo enable you to keep track of changes, this filter also displays images
+       that were deleted if the ``changes-since`` value specifies a date in the last 30 days.
+       Items deleted more than 30 days ago might be returned, but it is not guaranteed.
+       The date and time stamp format is `ISO 8601 <https://en.wikipedia.org/wiki/ISO_8601>`_:
+
+       ::
+
+          CCYY-MM-DDThh:mm:ss±hh:mm
+
+       The ``±hh:mm`` value, if included, returns the time zone as an offset from UTC.
+       For example, ``2015-08-27T09:49:58-05:00``.
+       If you omit the time zone, the UTC time zone is assumed.
+     in: query
+     required: false
+     type: string
+   server_status_query:
+     description: |
+       Filters the response by a server status, as a string. For example, ``ACTIVE``.
+     in: query
+     required: false
+     type: string
