@@ -80,27 +80,40 @@ def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
     return yaml.load(stream, OrderedLoader)
 
 
-def full_name(cls):
-    return cls.__module__ + '.' + cls.__name__
-
-
 class rest_method(nodes.Part, nodes.Element):
-    """rest_method custom node type
+    """Node for rest_method stanza
 
-    We specify a custom node type for rest_method so that we can
-    accumulate all the data about the rest method, but not render as
-    part of the normal rendering process. This means that we need a
-    renderer for every format we wish to support with this.
+    Because we need to insert very specific HTML at the final stage of
+    processing, the rest_method stanza needs a custom node type. This
+    lets us accumulate the relevant data into this node, during
+    parsing, but not turn it into known sphinx types (lists, tables,
+    sections).
 
+    Then, during the final build phase we transform directly to the
+    html that we want.
+
+    NOTE: this means we error trying to build latex or man pages for
+    these stanza types right now. This is all fixable if we add an
+    output formatter for this node type, but it's not yet a
+    priority. Contributions welcomed.
     """
     pass
 
 
 class rest_expand_all(nodes.Part, nodes.Element):
+    """A node placeholder for the expand all button.
+
+    This is a node that we can insert into the doctree which on final
+    render can be converted to the custom HTML we need for the expand
+    all button. It is automatically inserted at the top of the page
+    for API ref documents.
+    """
     pass
 
 
 class RestExpandAllDirective(Directive):
+    # This tells sphinx that the directive will need to generate
+    # content during the final build phase.
     has_content = True
 
     def run(self):
@@ -464,15 +477,29 @@ def add_assets(app):
 
 
 def setup(app):
+    # TODO(sdague): if someone wants to support latex/pdf, or man page
+    # generation using these stanzas, here is where you'd need to
+    # specify content specific renderers.
     app.add_node(rest_method,
                  html=(rest_method_html, None))
     app.add_node(rest_expand_all,
                  html=(rest_expand_all_html, None))
+
+    # This specifies all our directives that we're adding
     app.add_directive('rest_parameters', RestParametersDirective)
     app.add_directive('rest_method', RestMethodDirective)
     app.add_directive('rest_expand_all', RestExpandAllDirective)
+
+    # The doctree-read hook is used do the slightly crazy doc
+    # transformation that we do to get the rest_method document
+    # structure.
     app.connect('doctree-read', resolve_rest_references)
+
+    # Add all the static assets to our build during the early stage of building
     app.connect('builder-inited', add_assets)
+
+    # This copies all the assets (css, js, fonts) over to the build
+    # _static directory during final build.
     app.connect('build-finished', copy_assets)
 
     return {'version': '0.1'}

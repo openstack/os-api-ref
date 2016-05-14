@@ -1,6 +1,5 @@
-===============================
 os-api-ref
-===============================
+==========
 
 Sphinx Extensions to support API reference sites in OpenStack
 
@@ -17,13 +16,13 @@ provides a nice set of collapsing sections for REST methods and
 javascript controls to expand / collapse all sections.
 
 Features
-========
+--------
 
 * 2 new sphinx stanzas ``rest_method`` and ``rest_parameters`` which
   support putting semi-structured data into the RST files.
 
 TODO
-====
+----
 
 A list, in no particular order, of things we should do in this
 project. If you would like to contribute to any of these please show
@@ -41,7 +40,7 @@ discuss.
   work here and with the openstack docs theme).
 
 Potential ideas
----------------
+~~~~~~~~~~~~~~~
 
 These aren't even quite todos, but just ideas about things that might
 be useful.
@@ -52,7 +51,7 @@ be useful.
 
 
 Sphinx stanzas
-==============
+--------------
 
 TODO: document the details of the stanzas
 

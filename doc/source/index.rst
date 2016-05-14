@@ -6,15 +6,10 @@
 Welcome to os-api-ref's documentation!
 ========================================================
 
-Contents:
-
-.. toctree::
-   :maxdepth: 2
-
-   readme
-   installation
-   usage
-   contributing
+.. include:: readme.rst
+.. include:: installation.rst
+.. include:: usage.rst
+.. include:: contributing.rst
 
 Indices and tables
 ==================
@@ -22,4 +17,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
