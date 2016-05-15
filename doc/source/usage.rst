@@ -138,3 +138,45 @@ And corresponding entries in ``parameters.yaml``:
      in: query
      required: false
      type: string
+
+Every ``rest_parameters`` stanza specifies the lookup file it will
+use. This gives you the freedom to decide how you would like to split
+up your parameters, ranging from a single global file, to a dedicated
+file for every stanza, or anywhere in between.
+
+parameters file format
+----------------------
+
+The parameters file is inspired by the OpenAPI (aka: Swagger)
+specification for parameter specification. The following fields exist
+for every entry:
+
+in
+  where this parameter exists. One of ``header``, ``path``,
+  ``query``, ``body``.
+
+description
+  a free form description of the parameter. This can be
+  multiline (if using the | or > tags in yaml), and supports ``rst``
+  format syntax.
+
+required
+  whether this parameter is required or not. If ``required:
+  false`` the parameter name will be rendered with an (Optional)
+  keyword next to it
+
+type
+  the javascript/json type of the field. one of ``boolean``, ``int``,
+  ``float``, ``string``, ``array``, ``object``.
+
+min_version
+  the microversion that this parameter was introduced at. Will render
+  a *new in $version* stanza in the html output.
+
+
+rest_expand_all
+---------------
+
+The ``rest_expand_all`` stanza is used to place a control in the
+document that will be a global Show / Hide for all sections. There are
+times when this is extremely nice to have.
