@@ -191,7 +191,7 @@ class RestParametersDirective(Table):
         we are looking at is > the last item we saw. This is done at
         the section level first, so we're grouped, then alphabetically
         by lower case name within a section. Every time there is a
-        mismatch we raise an info message (will later be a warn).
+        mismatch we raise an warn message.
         """
         sections = {"header": 1, "path": 2, "query": 3, "body": 4}
 
@@ -204,7 +204,7 @@ class RestParametersDirective(Table):
             current_section = value['in']
             last_section = last[1]['in']
             if sections[current_section] < sections[last_section]:
-                self.app.info(
+                self.app.warn(
                     "Section out of order. All parameters in section ``%s`` "
                     "should be after section ``%s``. (see ``%s``)" % (
                         last_section,
@@ -212,7 +212,7 @@ class RestParametersDirective(Table):
                         last[0]))
             if (sections[value['in']] == sections[last[1]['in']] and
                 key.lower() < last[0].lower()):
-                self.app.info(
+                self.app.warn(
                     "Parameters out of order ``%s`` should be after ``%s``" % (
                         last[0], key))
             last = (key, value)
