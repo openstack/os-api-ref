@@ -180,3 +180,28 @@ rest_expand_all
 The ``rest_expand_all`` stanza is used to place a control in the
 document that will be a global Show / Hide for all sections. There are
 times when this is extremely nice to have.
+
+Runtime Warnings
+================
+
+The extension tries to help when it can point out that something isn't
+matching up correctly. The following warnings are generated when
+issues are found:
+
+* parameters file is not found or parsable yaml
+* a lookup value in the parameters file is not found
+* the parameters file is not sorted
+
+The sorting rules for parameters file is that first elements should be
+sorted by ``in`` going from earliest to latest processed.
+
+#. header
+#. path
+#. query
+#. body
+
+After that the parameters should be sorted by name, lower case alpha
+numerically.
+
+The sort enforcement is because in large parameters files it helps
+prevent unintended duplicates.
