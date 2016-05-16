@@ -327,6 +327,7 @@ class RestParametersDirective(Table):
             # self.app.info("Parsed content is: %s" % self.yaml)
             for key, values in self.yaml:
                 min_version = values.get('min_version', '')
+                max_version = values.get('max_version', '')
                 desc = values.get('description', '')
                 classes = []
                 if min_version:
@@ -334,6 +335,12 @@ class RestParametersDirective(Table):
                     min_ver_css_name = ("rp_min_ver_" +
                                         str(min_version).replace('.', '_'))
                     classes.append(min_ver_css_name)
+                if max_version:
+                    desc += ("\n\n**Deprecated in version %s**\n" %
+                             max_version)
+                    max_ver_css_name = ("rp_max_ver_" +
+                                        str(max_version).replace('.', '_'))
+                    classes.append(max_ver_css_name)
                 trow = nodes.row(classes=classes)
                 name = key
                 if values.get('required', False) is False:
