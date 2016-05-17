@@ -57,5 +57,5 @@ TODO: document the details of the stanzas
 
 
 * Free software: Apache license
-.. * Documentation: http://docs.openstack.org/developer/os-api-ref
+* Documentation: http://docs.openstack.org/developer/os-api-ref
 * Source: http://git.openstack.org/cgit/openstack/os-api-ref
