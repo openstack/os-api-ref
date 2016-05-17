@@ -79,3 +79,7 @@ a.operation-anchor {
 .api-detail table.docutils {
     width: 100%;
 }
+
+.versionmodified {
+    font-weight: bold;
+}
