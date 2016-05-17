@@ -509,4 +509,4 @@ def setup(app):
     # _static directory during final build.
     app.connect('build-finished', copy_assets)
 
-    return {'version': '0.1'}
+    return {'version': __version__}
