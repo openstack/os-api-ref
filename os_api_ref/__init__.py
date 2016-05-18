@@ -197,6 +197,17 @@ class RestParametersDirective(Table):
 
         last = None
         for key, value in yaml_data.items():
+            # use of an invalid 'in' value
+            if value['in'] not in sections:
+                self.app.warn(
+                    "``%s`` is not a valid value for 'in' (must be one of: %s)"
+                    ". (see ``%s``)" % (
+                        value['in'],
+                        ", ".join(sorted(sections.keys())),
+                        key)
+                    )
+                continue
+
             if last is None:
                 last = (key, value)
                 continue
