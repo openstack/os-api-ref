@@ -102,3 +102,64 @@ class TestBasicExample(base.TestCase):
 </table>"""
 
         self.assertIn(table, self.content)
+
+    def test_rest_response(self):
+
+        success_table = """table border="1" class="docutils">
+<colgroup>
+<col width="30%"></col>
+<col width="70%"></col>
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Code</th>
+<th class="head">Reason</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code>200 - OK</code></td>
+<td>Request was successful.</td>
+</tr>
+<tr class="row-odd"><td><code>100 - Continue</code></td>
+<td>An unusual code for an API</td>
+</tr>
+<tr class="row-even"><td><code>201 - Created</code></td>
+<td>Resource was created and is ready to use.</td>
+</tr>
+</tbody>
+</table>
+"""
+
+        error_table = """<table border="1" class="docutils">
+<colgroup>
+<col width="30%"></col>
+<col width="70%"></col>
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Code</th>
+<th class="head">Reason</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code>405 - Method Not Allowed</code></td>
+<td>Method is not valid for this endpoint.</td>
+</tr>
+<tr class="row-odd"><td><code>403 - Forbidden</code></td>
+<td>Policy does not allow current user to do this operation.</td>
+</tr>
+<tr class="row-even"><td><code>401 - Unauthorized</code></td>
+<td>User must authenticate before making a request</td>
+</tr>
+<tr class="row-odd"><td><code>400 - Bad Request</code></td>
+<td>Some content in the request was invalid</td>
+</tr>
+<tr class="row-even"><td><code>500 - Internal Server Error</code></td>
+<td>Something went wrong inside the service.</td>
+</tr>
+<tr class="row-odd"><td><code>409 - Conflict</code></td>
+<td>There is already a zone with this name.</td>
+</tr>
+</tbody>
+</table>
+"""
+        self.assertIn(success_table, self.content)
+        self.assertIn(error_table, self.content)
