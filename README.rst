@@ -26,8 +26,7 @@ TODO
 
 A list, in no particular order, of things we should do in this
 project. If you would like to contribute to any of these please show
-up in ``#openstack-dev`` on keystone and ask for ``sdague`` to
-discuss.
+up in ``#openstack-dev`` on IRC and ask for ``sdague`` to discuss.
 
 * Enhance documentation with examples and best practices
 * Testing for the code
@@ -45,7 +44,7 @@ Potential ideas
 These aren't even quite todos, but just ideas about things that might
 be useful.
 
-* ``.. litteralinclude`` is good for API samples files to be included,
+* ``.. literalinclude`` is good for API samples files to be included,
   but should we have more markup that includes the full ``REST /URL``
   as well
 
