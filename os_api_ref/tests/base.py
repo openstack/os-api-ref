@@ -15,9 +15,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from oslotest import base
+import os
+import testtools
 
 
-class TestCase(base.BaseTestCase):
+def example_dir(name=""):
+    return os.path.join(os.path.dirname(__file__), 'examples', name)
+
+
+class TestCase(testtools.TestCase):
 
     """Test case base class for all unit tests."""
