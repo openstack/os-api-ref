@@ -407,7 +407,7 @@ def rest_method_html(self, node):
     <div class="col-md-1 operation">
     <a name="%(target)s" class="operation-anchor" href="#%(target)s">
       <span class="glyphicon glyphicon-link"></span></a>
-    <span class="label label-success">%(method)s</span>
+    <span class="label label-%(method)s">%(method)s</span>
     </div>
     <div class="col-md-5">%(url)s</div>
     <div class="col-md-5">%(desc)s</div>

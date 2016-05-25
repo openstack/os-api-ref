@@ -83,3 +83,38 @@ a.operation-anchor {
 .versionmodified {
     font-weight: bold;
 }
+
+.label-POST {
+  background-color: #5cb85c;
+}
+.label-POST[href]:hover,
+.label-POST[href]:focus {
+  background-color: #449d44;
+}
+.label-GET,
+.label-HEAD {
+  background-color: #5bc0de;
+}
+.label-GET[href]:hover,
+.label-GET[href]:focus,
+.label-HEAD[href]:hover,
+.label-HEAD[href]:focus  {
+  background-color: #31b0d5;
+}
+.label-PUT,
+.label-PATCH  {
+  background-color: #f0ad4e;
+}
+.label-PUT[href]:hover,
+.label-PUT[href]:focus,
+.label-PATCH[href]:hover,
+.label-PATCH[href]:focus {
+  background-color: #ec971f;
+}
+.label-DELETE {
+  background-color: #d9534f;
+}
+.label-DELETE[href]:hover,
+.label-DELETE[href]:focus {
+  background-color: #c9302c;
+}
