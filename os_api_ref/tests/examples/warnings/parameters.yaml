@@ -1,0 +1,13 @@
+# These are out of order, this should be a warning.
+name2:
+  in: body
+  required: false
+  type: string
+  description: |
+    foo
+name:
+  in: body
+  required: true
+  type: string
+  description: |
+    The name of things
