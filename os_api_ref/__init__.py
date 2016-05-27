@@ -125,6 +125,14 @@ class RestMethodDirective(Directive):
     # this enables content in the directive
     has_content = True
 
+    @staticmethod
+    def find_param(content, name):
+        for line in content:
+            if ("%s: " % name) in line:
+                _, value = line.split(': ')
+                return value.rstrip().lstrip()
+        return None
+
     def run(self):
         lineno = self.state_machine.abs_line_number()
         target = nodes.target()
@@ -137,10 +145,19 @@ class RestMethodDirective(Directive):
         # TODO(sdague): this is a super simplistic parser, should be
         # more robust.
         method, sep, url = self.content[0].partition(' ')
+        node['min_version'] = self.find_param(self.content, 'min_version')
+        node['max_version'] = self.find_param(self.content, 'max_version')
 
         node['method'] = method
         node['url'] = url
         node['target'] = self.state.parent.attributes['ids'][0]
+        node['css_classes'] = ""
+        if node['min_version']:
+            node['css_classes'] += "rp_min_ver_%s " % (
+                str(node['min_version']).replace('.', '_'))
+        if node['max_version']:
+            node['css_classes'] += "rp_max_ver_%s " % (
+                str(node['max_version']).replace('.', '_'))
 
         # We need to build a temporary target that we can replace
         # later in the processing to get the TOC to resolve correctly.
@@ -403,7 +420,7 @@ class RestParametersDirective(Table):
 
 def rest_method_html(self, node):
     tmpl = """
-<div class="row operation-grp">
+<div class="row operation-grp %(css_classes)s">
     <div class="col-md-1 operation">
     <a name="%(target)s" class="operation-anchor" href="#%(target)s">
       <span class="glyphicon glyphicon-link"></span></a>
