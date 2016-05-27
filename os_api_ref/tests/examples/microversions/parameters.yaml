@@ -1,0 +1,20 @@
+name:
+  in: body
+  required: true
+  type: string
+  description: |
+    The name of things
+name2:
+  in: body
+  required: true
+  type: string
+  description: |
+    The name of things
+  min_version: 2.11
+name3:
+  in: body
+  required: true
+  type: string
+  description: |
+    The name of things
+  max_version: 2.20

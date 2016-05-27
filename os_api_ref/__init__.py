@@ -76,6 +76,12 @@ def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
     OrderedLoader.add_constructor(
         yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
         construct_mapping)
+    # for parameters.yaml we treat numbers (especially version
+    # numbers) as strings. So that microversion specification of 2.20
+    # and 2.2 don't get confused.
+    OrderedLoader.add_constructor(
+        u'tag:yaml.org,2002:float',
+        yaml.constructor.SafeConstructor.construct_yaml_str)
 
     return yaml.load(stream, OrderedLoader)
 
