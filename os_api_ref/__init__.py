@@ -123,7 +123,22 @@ class RestExpandAllDirective(Directive):
     has_content = True
 
     def run(self):
-        return [rest_expand_all()]
+        app = self.state.document.settings.env.app
+        node = rest_expand_all()
+        max_ver = app.config.os_api_ref_max_microversion
+        min_ver = app.config.os_api_ref_min_microversion
+        node['major'] = None
+        try:
+            if max_ver.split('.')[0] == min_ver.split('.')[0]:
+                node['max_ver'] = int(max_ver.split('.')[1])
+                node['min_ver'] = int(min_ver.split('.')[1])
+                node['major'] = int(max_ver.split('.')[0])
+        except ValueError:
+            # TODO(sdague): warn that we're ignoring this all
+            pass
+        except IndexError:
+            pass
+        return [node]
 
 
 class RestMethodDirective(Directive):
@@ -457,8 +472,9 @@ def rest_method_html(self, node):
 
 def rest_expand_all_html(self, node):
     tmpl = """
-<div>
-<div class=col-md-11></div>
+<div class="row">
+%(extra_js)s
+<div class=col-md-11>%(selector)s</div>
 <div class=col-md-1>
     <button id="expand-all"
        data-toggle="collapse"
@@ -466,6 +482,24 @@ def rest_expand_all_html(self, node):
     >Show All</button>
 </div>
 </div>"""
+
+    if node['major']:
+        selector = """
+<div class="btn-group" role="group" aria-label="...">
+    <button type="button"
+        class="btn btn-default mv_selector active">All</button>\n"""
+        for x in range(node['min_ver'], node['max_ver'] + 1):
+            selector += ('<button type="button" class="btn btn-default '
+                         'mv_selector">%d.%d</button>\n' % (node['major'], x))
+        selector += "</div>"
+        node['selector'] = selector
+        node['extra_js'] = ("<script>os_max_mv = %d; "
+                            "os_min_mv = %d;</script>") % (
+                                node['max_ver'],
+                                node['min_ver'])
+    else:
+        node['selector'] = ""
+        node['extra_js'] = ""
 
     self.body.append(tmpl % node)
     raise nodes.SkipNode
@@ -525,6 +559,9 @@ def add_assets(app):
 
 
 def setup(app):
+    # Add some config options around microversions
+    app.add_config_value('os_api_ref_max_microversion', '', 'env')
+    app.add_config_value('os_api_ref_min_microversion', '', 'env')
     # TODO(sdague): if someone wants to support latex/pdf, or man page
     # generation using these stanzas, here is where you'd need to
     # specify content specific renderers.

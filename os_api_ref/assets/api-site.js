@@ -1,3 +1,6 @@
+var os_min_mv = 1;
+var os_max_mv = 1;
+
 (function() {
     // the list of expanded element ids
     var expanded = [];
@@ -72,6 +75,17 @@
             $(document.body).scrollTop($(window.location.hash).offset().top);
         }
 
+        // Wire up microversion selector
+        $('.mv_selector').on('click', function(e) {
+            var version = e.currentTarget.innerHTML;
+            // flip what is active
+            $(this).addClass('active').siblings().removeClass('active');
+            if (version == "All") {
+                reset_microversion();
+            } else {
+                set_microversion(version);
+            }
+        });
     });
     /**
      * Helper function for setting the text, styles for expandos
@@ -92,6 +106,7 @@
             history.pushState('', 'new expand', url);
         }
     }
+
 
     // Generically update the query string for a url. Credit to
     // http://stackoverflow.com/questions/5999118/add-or-update-query-string-parameter
@@ -126,4 +141,26 @@
         }
     }
 
+    // Set the Y value of the microversion to turn on / off visibility
+    // of components.
+    function set_microversion(number) {
+        var major = number.split(".")[0];
+        var micro = number.split(".")[1];
+        for (var i = os_min_mv; i <= os_max_mv; i++) {
+            var max_class = ".rp_max_ver_" + major + "_" + i;
+            var min_class = ".rp_min_ver_" + major + "_" + i;
+            if (i < micro) {
+                $(max_class).hide(400);
+                $(min_class).show(400);
+            } else if (i >= micro) {
+                $(min_class).hide(400);
+                $(max_class).show(400);
+            }
+        }
+    }
+
+    function reset_microversion() {
+        $('[class^=rp_min_ver]').show(400);
+        $('[class^=rp_max_ver]').show(400);
+    }
 })();

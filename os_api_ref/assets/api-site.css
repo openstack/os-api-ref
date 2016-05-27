@@ -128,3 +128,15 @@ span.path_parameter {
   background-color: #f9f2f4;
   border-radius: 4px;
 }
+
+/* for microversion selector */
+.mv_selector {
+    font-size: 0.8em;
+    padding: 0.3em;
+}
+
+.mv_selector.active {
+    color: #fff;
+    background-color: #31b0d5;
+    border-color: #269abc;
+}

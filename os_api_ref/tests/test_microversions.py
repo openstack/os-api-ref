@@ -45,7 +45,7 @@ class TestMicroversions(base.TestCase):
         self.content = str(self.soup)
 
     def test_rest_method(self):
-        """Do we get an out of order naming warning."""
+        """Test that min / max mv css class attributes are set"""
         content = self.soup.find_all(class_='rp_min_ver_2_17')
         self.assertIn(
             '<div class="row operation-grp rp_min_ver_2_17 rp_max_ver_2_19 ">',
@@ -56,7 +56,7 @@ class TestMicroversions(base.TestCase):
             str(content[0]))
 
     def test_parameters_table(self):
-
+        """Test that min / max mv css class attributes are set in params"""
         table = """<div class="api-detail collapse section" id="list-servers-detail">
 <table border="1" class="docutils">
 <colgroup>
@@ -95,5 +95,47 @@ class TestMicroversions(base.TestCase):
 </tbody>
 </table>
 </div>
-"""
+"""  # noqa
         self.assertIn(table, self.content)
+
+    def test_mv_selector(self):
+
+        button_selectors = \
+            """<div aria-label="..." class="btn-group" role="group">
+<button class="btn btn-default mv_selector active" type="button">All</button>
+<button class="btn btn-default mv_selector" type="button">2.1</button>
+<button class="btn btn-default mv_selector" type="button">2.2</button>
+<button class="btn btn-default mv_selector" type="button">2.3</button>
+<button class="btn btn-default mv_selector" type="button">2.4</button>
+<button class="btn btn-default mv_selector" type="button">2.5</button>
+<button class="btn btn-default mv_selector" type="button">2.6</button>
+<button class="btn btn-default mv_selector" type="button">2.7</button>
+<button class="btn btn-default mv_selector" type="button">2.8</button>
+<button class="btn btn-default mv_selector" type="button">2.9</button>
+<button class="btn btn-default mv_selector" type="button">2.10</button>
+<button class="btn btn-default mv_selector" type="button">2.11</button>
+<button class="btn btn-default mv_selector" type="button">2.12</button>
+<button class="btn btn-default mv_selector" type="button">2.13</button>
+<button class="btn btn-default mv_selector" type="button">2.14</button>
+<button class="btn btn-default mv_selector" type="button">2.15</button>
+<button class="btn btn-default mv_selector" type="button">2.16</button>
+<button class="btn btn-default mv_selector" type="button">2.17</button>
+<button class="btn btn-default mv_selector" type="button">2.18</button>
+<button class="btn btn-default mv_selector" type="button">2.19</button>
+<button class="btn btn-default mv_selector" type="button">2.20</button>
+<button class="btn btn-default mv_selector" type="button">2.21</button>
+<button class="btn btn-default mv_selector" type="button">2.22</button>
+<button class="btn btn-default mv_selector" type="button">2.23</button>
+<button class="btn btn-default mv_selector" type="button">2.24</button>
+<button class="btn btn-default mv_selector" type="button">2.25</button>
+<button class="btn btn-default mv_selector" type="button">2.26</button>
+<button class="btn btn-default mv_selector" type="button">2.27</button>
+<button class="btn btn-default mv_selector" type="button">2.28</button>
+<button class="btn btn-default mv_selector" type="button">2.29</button>
+<button class="btn btn-default mv_selector" type="button">2.30</button>
+</div>"""
+        self.assertIn(button_selectors, self.content)
+
+    def test_js_declares(self):
+        self.assertIn("os_max_mv = 30;", self.content)
+        self.assertIn("os_min_mv = 1;", self.content)

@@ -27,3 +27,6 @@ source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'index'
+
+os_api_ref_min_microversion = '2.1'
+os_api_ref_max_microversion = '2.30'
