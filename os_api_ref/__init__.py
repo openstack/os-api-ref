@@ -444,6 +444,13 @@ def rest_method_html(self, node):
     </div>
 </div>"""
 
+    node['url'] = node['url'].replace(
+        '{',
+        '<span class="path_parameter">{')
+    node['url'] = node['url'].replace(
+        '}',
+        '}</span>')
+
     self.body.append(tmpl % node)
     raise nodes.SkipNode
 
