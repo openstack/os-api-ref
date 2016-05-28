@@ -11,44 +11,15 @@ tt.literal {
 larger, we need them smaller */
 blockquote { font-size: 1em; }
 
-pre {
-    display: block;
-    padding: 9.5px;
-    margin: 0 0 10px;
-    font-size: 13px;
-    line-height: 1.428571429;
-    color: #333;
-    word-break: break-all;
-    word-wrap: break-word;
-    background-color: #f5f5f5;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
 
 tbody>tr:nth-child(odd)>td,
 tbody>tr:nth-child(odd)>th {
     background-color: #f9f9f9;
 }
 
-table>thead>tr>th, table>tbody>tr>th, table>tfoot>tr>th, table>thead>tr>td, table>tbody>tr>td, table>tfoot>tr>td {
-    padding: 8px;
-    line-height: 1.428571429;
-    vertical-align: top;
-    border-top: 1px solid #ddd;
-}
 
 td>p {
     margin: 0 0 0.5em;
-}
-
-div.document {
-    width: 80% !important;
-}
-
-@media (max-width: 1200px) {
-    div.document {
-        width: 960px !important;
-    }
 }
 
 .operation-grp {
@@ -119,6 +90,18 @@ a.operation-anchor {
   background-color: #c9302c;
 }
 
+.btn-detail:hover, .btn-detail:focus,
+.btn-expand-all:hover, .btn-expand-all:focus {
+    color: #fff;
+    background-color: #3b6c91;
+    border-color: #269abc;
+}
+
+.btn-detail,
+.btn-expand-all {
+    background-color: #2A4E68;
+}
+
 span.path_parameter {
   font-family: monospace;
   padding: 2px 4px;
@@ -144,4 +127,32 @@ span.path_parameter {
 p.url-subtitle {
   color: #555;
   font-weight: bold;
+}
+
+.docs-body .section h1 {
+    display: block;
+}
+
+div.docs-sidebar-toc > div > ul > li {
+  list-style-type: none;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+div.docs-sidebar-toc > div > ul {
+  padding-left: 20px
+}
+
+div.docs-sidebar-toc > div > ul > li > ul > li {
+  list-style-type: disc;
+  font-weight: normal;
+}
+
+div.docs-top-contents {
+  display: none;
+}
+
+div.endpoint-container{
+  padding-left: 15px;
+  padding-top: 10px;
 }

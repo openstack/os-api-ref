@@ -30,6 +30,9 @@ from os_api_ref.http_codes import HTTPResponseCodeDirective
 __version__ = pbr.version.VersionInfo(
     'os_api_ref').version_string()
 
+# This is to allow for a graceful swap from oslosphinx to openstackdocstheme
+THEME = 'openstackdocstheme'
+
 
 """This provides a sphinx extension able to create the HTML needed
 for the api-ref website.
@@ -464,15 +467,22 @@ class RestParametersDirective(Table):
 
 def rest_method_html(self, node):
     tmpl = """
-<div class="row operation-grp %(css_classes)s">
-    <div class="col-md-1 operation">
+<div class="operation-grp %(css_classes)s">
+<div class="row">
+    <div class="col-md-2">
+    <div class="operation">
     <a name="%(target)s" class="operation-anchor" href="#%(target)s">
       <span class="glyphicon glyphicon-link"></span></a>
     <span class="label label-%(method)s">%(method)s</span>
     </div>
-    <div class="row col-md-9">
-    <div class="row col-md-12">%(url)s</div>
-    <div class="row col-md-12"><p class="url-subtitle">%(desc)s</p></div>
+    </div>
+    <div class="col-md-9">
+    <div class="row">
+        <div class="endpoint-container">
+        <div class="row col-md-12">%(url)s</div>
+        <div class="row col-md-12"><p class="url-subtitle">%(desc)s</p></div>
+        </div>
+    </div>
     </div>
     <div class="col-md-1">
     <button
@@ -482,6 +492,7 @@ def rest_method_html(self, node):
        id="%(target)s-detail-btn"
        >detail</button>
     </div>
+</div>
 </div>"""
 
     node['url'] = node['url'].replace(
@@ -563,23 +574,28 @@ def resolve_rest_references(app, doctree):
 
 
 def copy_assets(app, exception):
-    assets = ('bootstrap.min.css', 'api-site.css',
-              'bootstrap.min.js', 'api-site.js',
-              'glyphicons-halflings-regular.ttf',
-              'glyphicons-halflings-regular.woff')
+    assets = ('api-site.css', 'api-site.js')
+    fonts = (
+        'glyphicons-halflings-regular.ttf',
+        'glyphicons-halflings-regular.woff'
+    )
+
     if app.builder.name != 'html' or exception:
         return
     app.info('Copying assets: %s' % ', '.join(assets))
+    app.info('Copying fonts: %s' % ', '.join(fonts))
     for asset in assets:
         dest = os.path.join(app.builder.outdir, '_static', asset)
         source = os.path.abspath(os.path.dirname(__file__))
         copyfile(os.path.join(source, 'assets', asset), dest)
+    for font in fonts:
+        dest = os.path.join(app.builder.outdir, '_static/fonts', font)
+        source = os.path.abspath(os.path.dirname(__file__))
+        copyfile(os.path.join(source, 'assets', font), dest)
 
 
 def add_assets(app):
-    app.add_stylesheet('bootstrap.min.css')
     app.add_stylesheet('api-site.css')
-    app.add_javascript('bootstrap.min.js')
     app.add_javascript('api-site.js')
 
 
