@@ -67,7 +67,7 @@ class TestBasicExample(base.TestCase):
             '<span class="label label-GET">GET</span>',
             str(content))
         self.assertIn(
-            '<div class="col-md-5">/servers</div>',
+            '<div class="row col-md-12">/servers</div>',
             str(content))
         self.assertIn(
             ('<button class="btn btn-info btn-sm btn-detail" '

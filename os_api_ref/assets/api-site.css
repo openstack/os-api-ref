@@ -140,3 +140,8 @@ span.path_parameter {
     background-color: #31b0d5;
     border-color: #269abc;
 }
+
+p.url-subtitle {
+  color: #555;
+  font-weight: bold;
+}

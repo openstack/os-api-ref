@@ -470,8 +470,10 @@ def rest_method_html(self, node):
       <span class="glyphicon glyphicon-link"></span></a>
     <span class="label label-%(method)s">%(method)s</span>
     </div>
-    <div class="col-md-5">%(url)s</div>
-    <div class="col-md-5">%(desc)s</div>
+    <div class="row col-md-9">
+    <div class="row col-md-12">%(url)s</div>
+    <div class="row col-md-12"><p class="url-subtitle">%(desc)s</p></div>
+    </div>
     <div class="col-md-1">
     <button
        class="btn btn-info btn-sm btn-detail"
