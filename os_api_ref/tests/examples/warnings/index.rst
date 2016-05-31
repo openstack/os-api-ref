@@ -11,3 +11,5 @@ I am text, hear me roar!
 .. rest_parameters:: parameters.yaml
 
    - name: name
+   - name: lookup_key_name
+   - name: name_1
