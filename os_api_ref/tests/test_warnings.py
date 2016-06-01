@@ -50,3 +50,19 @@ class TestWarnings(base.TestCase):
             ("WARNING: Parameters out of order ``name2`` "
              "should be after ``name``"),
             self.warning)
+
+    def test_missing_lookup_name(self):
+        """Warning when missing lookup key in parameter file."""
+        self.assertIn(
+            ("WARNING: No field definition for ``lookup_key_name`` found in "),
+            self.warning)
+
+    def test_missing_field(self):
+        """Warning when missing type field in parameter file."""
+        self.assertIn(
+            ("WARNING: Failure on key: name, values: "
+             + "OrderedDict([('description',"
+             + " 'name_1 is missing type field.\\n'), ('in', 'body'),"
+             + " ('required', True)]). "
+             + "'NoneType' object has no attribute 'split'\n"),
+            self.warning)

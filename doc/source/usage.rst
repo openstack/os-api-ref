@@ -1,5 +1,5 @@
 Usage
-========
+=====
 
 ``os-api-ref`` is designed to be used inside of a sphinx tree that is
 devoted solely to the documentation of the API.
@@ -33,6 +33,7 @@ a particular REST method. It takes the form of:
 
    .. rest_method:: <METHODNAME> <url>
 
+``METHODNAME`` should be one of the commonly used REST methods or HTTP verbs.
 This stanza should be the first element in a ``section`` that has some
 descriptive title about the method. An example from the Nova
 documentation is:
@@ -70,20 +71,22 @@ in ``rst``.
 
 A REST API that uses JSON has a large number of structured parameters
 that include type, location (i.e. is this in the query, the header,
-the path, the body?), whether or not this is required, as well as the
-desire to have long description about each one. And, assuming some
-consistent modeling, that parameter will show up in multiple calls. A
+the path, the body), whether or not this parameter is required, as well as
+the desire to provide a long description about each parameter. And, assuming
+some consistent modeling, that parameter will show up in multiple calls. A
 ``server_id`` used in the path is always going to have the same
 meaning.
 
 It is natural to want to display this data in a tabular way to show
-all these dimensions. However, tables in RST are quite cumbersome, and
+all these dimensions. However, tables in ``rst`` are quite cumbersome, and
 repeating the same data over and over again is error prone.
 
-``rest_parameters`` solves this by having the inline markup be a yaml
-list of ``name: value`` pairs. ``name`` is the name of the
-parameter. ``value`` is the key to lookup the rest of the details in a
-yaml file, specified in each stanza.
+The ``rest_parameters`` stanza solves this by having the inline markup
+be a yaml list of ``name: value`` pairs. ``name`` is the name of the
+parameter. ``value`` is the key to lookup the rest of the details for
+this parameter in a parameters file.  In each method,
+there should be one ``rest_parameters`` stanza for the request, and
+another ``rest_parameters`` stanza for the response.
 
 .. code-block:: rst
 
@@ -148,8 +151,9 @@ parameters file format
 ----------------------
 
 The parameters file is inspired by the OpenAPI (aka: Swagger)
-specification for parameter specification. The following fields exist
-for every entry:
+specification.  The OpenAPI specification provides a property object
+which categorizes the parameters by type and describes how the parameter is used.
+The following fields exist for every entry:
 
 in
   where this parameter exists. One of ``header``, ``path``,
@@ -173,6 +177,10 @@ min_version
   the microversion that this parameter was introduced at. Will render
   a *new in $version* stanza in the html output.
 
+max_version
+  the last version that includes this parameter. Will render
+  a *Deprecated in $version* stanza in the html output.
+
 
 rest_expand_all
 ---------------
@@ -181,26 +189,44 @@ The ``rest_expand_all`` stanza is used to place a control in the
 document that will be a global Show / Hide for all sections. There are
 times when this is extremely nice to have.
 
+
+Including Sample Files
+======================
+
+To refer to a sample file in a ``rst`` file, use the
+``rst`` directive, ``literalinclude``. Typically, the content sent
+or received is of type JSON, so the language role is set to javascript.
+The example immediately follows the parameter listing in the ``rst`` file.
+An example of an included Nova response sample file:
+
+.. code-block:: rst
+
+   .. literalinclude:: ../../doc/api_samples/os-evacuate/server-evacuate-resp.json
+      :language: javascript
+
+
 Runtime Warnings
 ================
 
-The extension tries to help when it can point out that something isn't
+The extension tries to help when it can by pointing out that something isn't
 matching up correctly. The following warnings are generated when
 issues are found:
 
-* parameters file is not found or parsable yaml
-* a lookup value in the parameters file is not found
-* the parameters file is not sorted
+* parameters file is not found
+* parameters file is not valid yaml, i.e.
+  missing colon after the name
+* a lookup value in the ``rst`` file is not found in the parameters file
+* the parameters file is not sorted as outlined in the rules below
 
 The sorting rules for parameters file is that first elements should be
-sorted by ``in`` going from earliest to latest processed.
+sorted by ``in``, going from earliest to latest processed.
 
 #. header
 #. path
 #. query
 #. body
 
-After that the parameters should be sorted by name, lower case alpha
+After that, the parameters should be sorted by name, lower case alpha
 numerically.
 
 The sort enforcement is because in large parameters files it helps
