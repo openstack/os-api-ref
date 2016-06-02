@@ -13,3 +13,4 @@ I am text, hear me roar!
    - name: name
    - name: lookup_key_name
    - name: name_1
+   - invalid_name

@@ -66,3 +66,10 @@ class TestWarnings(base.TestCase):
              + " ('required', True)]). "
              + "'NoneType' object has no attribute 'split'\n"),
             self.warning)
+
+    def test_invalid_parameter_definition(self):
+        """Warning when parameter definition is invalid."""
+        self.assertIn(
+            ("WARNING: Invalid parameter definition ``invalid_name``. "
+             + "Expected format: ``name: reference``. "),
+            self.warning)
