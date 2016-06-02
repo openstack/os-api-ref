@@ -203,11 +203,11 @@ class RestParametersDirective(Table):
         if fpath in YAML_CACHE:
             return YAML_CACHE[fpath]
 
+        lookup = {}
         # self.app.info("Fpath: %s" % fpath)
         try:
             with open(fpath, 'r') as stream:
                 lookup = ordered_load(stream)
-                self._check_yaml_sorting(fpath, lookup)
         except IOError:
             self.env.warn(
                 self.env.docname,
@@ -216,6 +216,14 @@ class RestParametersDirective(Table):
         except yaml.YAMLError as exc:
             self.app.warn(exc)
             raise
+
+        if lookup:
+            self._check_yaml_sorting(fpath, lookup)
+        else:
+            self.env.warn(
+                self.env.docname,
+                "Parameters file is empty %s" % fpath)
+            return
 
         YAML_CACHE[fpath] = lookup
         return lookup
@@ -272,7 +280,10 @@ class RestParametersDirective(Table):
         This allows use to reference an external file for the actual
         parameter definitions.
         """
+
         lookup = self._load_param_file(fpath)
+        if not lookup:
+            return
 
         content = "\n".join(self.content)
         parsed = yaml.load(content)

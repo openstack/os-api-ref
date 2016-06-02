@@ -52,7 +52,7 @@ class TestWarnings(base.TestCase):
             self.warning)
 
     def test_missing_lookup_name(self):
-        """Warning when missing lookup key in parameter file."""
+        """Warning when missing a lookup key in parameter file."""
         self.assertIn(
             ("WARNING: No field definition for ``lookup_key_name`` found in "),
             self.warning)
@@ -72,4 +72,24 @@ class TestWarnings(base.TestCase):
         self.assertIn(
             ("WARNING: Invalid parameter definition ``invalid_name``. "
              + "Expected format: ``name: reference``. "),
+            self.warning)
+
+    def test_empty_parameter_file(self):
+        """Warning when parameter file exists but is empty."""
+        self.assertIn(
+            ("WARNING: Parameters file is empty"),
+            self.warning)
+
+    def test_no_parameters_set(self):
+        """Error when parameters are not set in rest_parameters stanza."""
+        self.assertIn(
+            ("ERROR: No parameters defined\n\n.."
+             + " rest_parameters:: parameters.yaml\n"),
+            self.warning)
+
+    def test_parameter_file_not_exist(self):
+        """Error when parameter file does not exist"""
+        self.assertIn(
+            ("ERROR: No parameters defined\n\n.."
+             + " rest_parameters:: no_parameters.yaml\n"),
             self.warning)
