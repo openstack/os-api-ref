@@ -100,40 +100,7 @@ class TestMicroversions(base.TestCase):
 
     def test_mv_selector(self):
 
-        button_selectors = \
-            """<div aria-label="..." class="btn-group" role="group">
-<button class="btn btn-default mv_selector active" type="button">All</button>
-<button class="btn btn-default mv_selector" type="button">2.1</button>
-<button class="btn btn-default mv_selector" type="button">2.2</button>
-<button class="btn btn-default mv_selector" type="button">2.3</button>
-<button class="btn btn-default mv_selector" type="button">2.4</button>
-<button class="btn btn-default mv_selector" type="button">2.5</button>
-<button class="btn btn-default mv_selector" type="button">2.6</button>
-<button class="btn btn-default mv_selector" type="button">2.7</button>
-<button class="btn btn-default mv_selector" type="button">2.8</button>
-<button class="btn btn-default mv_selector" type="button">2.9</button>
-<button class="btn btn-default mv_selector" type="button">2.10</button>
-<button class="btn btn-default mv_selector" type="button">2.11</button>
-<button class="btn btn-default mv_selector" type="button">2.12</button>
-<button class="btn btn-default mv_selector" type="button">2.13</button>
-<button class="btn btn-default mv_selector" type="button">2.14</button>
-<button class="btn btn-default mv_selector" type="button">2.15</button>
-<button class="btn btn-default mv_selector" type="button">2.16</button>
-<button class="btn btn-default mv_selector" type="button">2.17</button>
-<button class="btn btn-default mv_selector" type="button">2.18</button>
-<button class="btn btn-default mv_selector" type="button">2.19</button>
-<button class="btn btn-default mv_selector" type="button">2.20</button>
-<button class="btn btn-default mv_selector" type="button">2.21</button>
-<button class="btn btn-default mv_selector" type="button">2.22</button>
-<button class="btn btn-default mv_selector" type="button">2.23</button>
-<button class="btn btn-default mv_selector" type="button">2.24</button>
-<button class="btn btn-default mv_selector" type="button">2.25</button>
-<button class="btn btn-default mv_selector" type="button">2.26</button>
-<button class="btn btn-default mv_selector" type="button">2.27</button>
-<button class="btn btn-default mv_selector" type="button">2.28</button>
-<button class="btn btn-default mv_selector" type="button">2.29</button>
-<button class="btn btn-default mv_selector" type="button">2.30</button>
-</div>"""
+        button_selectors = '<option selected="selected" value="">All</option><option value="2.1">2.1</option><option value="2.2">2.2</option><option value="2.3">2.3</option><option value="2.4">2.4</option><option value="2.5">2.5</option><option value="2.6">2.6</option><option value="2.7">2.7</option><option value="2.8">2.8</option><option value="2.9">2.9</option><option value="2.10">2.10</option><option value="2.11">2.11</option><option value="2.12">2.12</option><option value="2.13">2.13</option><option value="2.14">2.14</option><option value="2.15">2.15</option><option value="2.16">2.16</option><option value="2.17">2.17</option><option value="2.18">2.18</option><option value="2.19">2.19</option><option value="2.20">2.20</option><option value="2.21">2.21</option><option value="2.22">2.22</option><option value="2.23">2.23</option><option value="2.24">2.24</option><option value="2.25">2.25</option><option value="2.26">2.26</option><option value="2.27">2.27</option><option value="2.28">2.28</option><option value="2.29">2.29</option><option value="2.30">2.30</option>'  # noqa
         self.assertIn(button_selectors, self.content)
 
     def test_js_declares(self):

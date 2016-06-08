@@ -133,12 +133,14 @@ class RestExpandAllDirective(Directive):
         node = rest_expand_all()
         max_ver = app.config.os_api_ref_max_microversion
         min_ver = app.config.os_api_ref_min_microversion
+        releases = app.config.os_api_ref_release_microversions
         node['major'] = None
         try:
             if max_ver.split('.')[0] == min_ver.split('.')[0]:
                 node['max_ver'] = int(max_ver.split('.')[1])
                 node['min_ver'] = int(min_ver.split('.')[1])
                 node['major'] = int(max_ver.split('.')[0])
+                node['releases'] = releases
         except ValueError:
             # TODO(sdague): warn that we're ignoring this all
             pass
@@ -510,7 +512,9 @@ def rest_expand_all_html(self, node):
     tmpl = """
 <div class="row">
 %(extra_js)s
-<div class=col-md-11>%(selector)s</div>
+<div class="col-md-2 col-md-offset-9">
+%(selector)s
+</div>
 <div class=col-md-1>
     <button id="expand-all"
        data-toggle="collapse"
@@ -519,26 +523,62 @@ def rest_expand_all_html(self, node):
 </div>
 </div>"""
 
+    node.setdefault('selector', "")
+    node.setdefault('extra_js', "")
+
     if node['major']:
-        selector = """
-<div class="btn-group" role="group" aria-label="...">
-    <button type="button"
-        class="btn btn-default mv_selector active">All</button>\n"""
-        for x in range(node['min_ver'], node['max_ver'] + 1):
-            selector += ('<button type="button" class="btn btn-default '
-                         'mv_selector">%d.%d</button>\n' % (node['major'], x))
-        selector += "</div>"
-        node['selector'] = selector
-        node['extra_js'] = ("<script>os_max_mv = %d; "
-                            "os_min_mv = %d;</script>") % (
-                                node['max_ver'],
-                                node['min_ver'])
-    else:
-        node['selector'] = ""
-        node['extra_js'] = ""
+        node['selector'], node['extra_js'] = create_mv_selector(node)
 
     self.body.append(tmpl % node)
     raise nodes.SkipNode
+
+
+def create_mv_selector(node):
+
+    mv_list = '<option value="" selected="selected">All</option>'
+
+    for x in range(node['min_ver'], node['max_ver'] + 1):
+        mv_list += build_mv_item(node['major'], x, node['releases'])
+
+    selector_tmpl = """
+<form class=form-inline">
+<div class="form-group">
+<label class="control-label">
+Microversions
+</label>
+<select class="combobox form-control" id="mv_select">
+    %(mv_list)s
+</select>
+</div>
+</form>
+"""
+
+    js_tmpl = """
+<script>
+    os_max_mv = %(max)d;
+    os_min_mv = %(min)d;
+</script>
+"""
+
+    selector_content = {
+        'mv_list': mv_list
+    }
+
+    js_content = {
+        'min': node['min_ver'],
+        'max': node['max_ver']
+    }
+
+    return selector_tmpl % selector_content, js_tmpl % js_content
+
+
+def build_mv_item(major, micro, releases):
+    version = "%d.%d" % (major, micro)
+    if version in releases:
+        return '<option value="%s">%s - %s</option>' % (
+            version, version, releases[version].capitalize())
+    else:
+        return '<option value="%s">%s</option>' % (version, version)
 
 
 def resolve_rest_references(app, doctree):
@@ -574,12 +614,11 @@ def resolve_rest_references(app, doctree):
 
 
 def copy_assets(app, exception):
-    assets = ('api-site.css', 'api-site.js')
+    assets = ('api-site.css', 'api-site.js', 'combobox.js')
     fonts = (
         'glyphicons-halflings-regular.ttf',
         'glyphicons-halflings-regular.woff'
     )
-
     if app.builder.name != 'html' or exception:
         return
     app.info('Copying assets: %s' % ', '.join(assets))
@@ -597,12 +636,14 @@ def copy_assets(app, exception):
 def add_assets(app):
     app.add_stylesheet('api-site.css')
     app.add_javascript('api-site.js')
+    app.add_javascript('combobox.js')
 
 
 def setup(app):
     # Add some config options around microversions
     app.add_config_value('os_api_ref_max_microversion', '', 'env')
     app.add_config_value('os_api_ref_min_microversion', '', 'env')
+    app.add_config_value('os_api_ref_release_microversions', '', 'env')
     # TODO(sdague): if someone wants to support latex/pdf, or man page
     # generation using these stanzas, here is where you'd need to
     # specify content specific renderers.

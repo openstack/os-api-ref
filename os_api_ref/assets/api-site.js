@@ -1,6 +1,3 @@
-var os_min_mv = 1;
-var os_max_mv = 1;
-
 (function() {
     // the list of expanded element ids
     var expanded = [];
@@ -163,4 +160,19 @@ var os_max_mv = 1;
         $('[class^=rp_min_ver]').show(400);
         $('[class^=rp_max_ver]').show(400);
     }
+
+
+    $(document).ready(function(){
+        $('#mv_select').combobox({appendId: '-visable'});
+        $('#mv_select').on('change', function() {
+            var version = this.value;
+            if (version == "") {
+                reset_microversion();
+            } else {
+                set_microversion(version);
+            }
+        });
+    });
+
+
 })();
