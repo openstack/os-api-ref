@@ -280,6 +280,15 @@ class RestParametersDirective(Table):
         # self.app.info("Lookup table looks like %s" % lookup)
         new_content = list()
         for paramlist in parsed:
+            if not isinstance(paramlist, dict):
+                self.env.warn(
+                    "%s:%s" % (
+                        self.state_machine.node.source,
+                        self.state_machine.node.line),
+                    ("Invalid parameter definition ``%s``. Expected "
+                     "format: ``name: reference``. "
+                     " Skipping." % paramlist))
+                continue
             for name, ref in paramlist.items():
                 if ref in lookup:
                     new_content.append((name, lookup[ref]))
