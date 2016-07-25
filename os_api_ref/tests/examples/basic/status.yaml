@@ -1,0 +1,39 @@
+#################
+# Success Codes #
+#################
+100:
+  default: |
+    An unusual code for an API
+200:
+  default: |
+    Request was successful.
+201:
+  default: |
+    Resource was created and is ready to use.
+
+#################
+#  Error Codes  #
+#################
+
+400:
+  default: |
+    Some content in the request was invalid
+  zone_data_error: |
+    Some of the data for the
+401:
+  default: |
+    User must authenticate before making a request
+403:
+  default: |
+     Policy does not allow current user to do this operation.
+405:
+  default: |
+    Method is not valid for this endpoint.
+409:
+ default: |
+    This operation conflicted with another operation on this resource
+ duplcate_zone: |
+    There is already a zone with this name.
+500:
+  default: |
+    Something went wrong inside the service.

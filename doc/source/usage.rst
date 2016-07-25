@@ -182,6 +182,114 @@ max_version
   a *Deprecated in $version* stanza in the html output.
 
 
+rest_status_code
+----------------
+
+The ``rest_status_code`` stanza is how you can show what HTTP status codes your
+API uses and what they indicate
+
+.. code-block:: rst
+
+   .. rest_status_code:: <sucess|failure> <location of status.yaml file>
+
+This stanza should be the first element after the narrative section of the
+method description.
+
+An example from the Designate documentation is:
+
+.. code-block:: rst
+   :emphasize-lines: 11-25
+
+   Create Zone
+   ===========
+
+   .. rest_method::  POST /v2/zones
+
+   Create a zone
+
+   Response codes
+   --------------
+
+   .. rest_status_code:: success status.yaml
+
+      - 200
+      - 100
+      - 201
+
+
+   .. rest_status_code:: error status.yaml
+
+      - 405
+      - 403
+      - 401
+      - 400
+      - 500
+      - 409: duplcate_zone
+
+And corresponding entries in ``status.yaml``:
+
+.. code-block:: yaml
+
+    100:
+      default: |
+        An unusual code for an API
+    200:
+      default: |
+        Request was successful.
+    201:
+      default: >
+        Resource was created and is ready to use. The ``Location`` header
+        will have the URL to the new item
+
+    400:
+      default: |
+        Some content in the request was invalid
+      zone_data_error: |
+        Some of the data for the
+    401:
+      default: |
+        User must authenticate before making a request
+    403:
+      default: |
+         Policy does not allow current user to do this operation.
+    405:
+      default: |
+        Method is not valid for this endpoint. Not all endpoints allow all HTTP methods.
+    409:
+     default: |
+        This operation conflicted with another operation on this resource
+     duplcate_zone: |
+        There is already a zone with this name.
+    500:
+      default: |
+        Something went wrong inside the service.
+
+
+This will create a 2 tables of response codes, one for success and one for
+errors.
+
+status file format
+------------------
+
+This is a simple yaml file, with a single object of status codes and the
+reasons that each would be used.
+
+Each status code **must** have a default entry. This is used when a code is
+used in a ``rest_status_code`` stanza with no value.
+
+There may be situations where the reason for a code may be different across
+endpoints, or a different message may be appropriate.
+
+In this case, adding a entry at the same level as the ``default`` and
+referencing that in the stanaza like so:
+
+.. code-block:: yaml
+
+   - 409: duplcate_zone
+
+This will overide the default message with the newly defined one.
+
+
 rest_expand_all
 ---------------
 

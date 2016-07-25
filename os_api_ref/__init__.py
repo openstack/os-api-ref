@@ -23,6 +23,9 @@ from sphinx.util.compat import Directive
 from sphinx.util.osutil import copyfile
 import yaml
 
+from os_api_ref.http_codes import http_code
+from os_api_ref.http_codes import http_code_html
+from os_api_ref.http_codes import HTTPResponseCodeDirective
 
 __version__ = pbr.version.VersionInfo(
     'os_api_ref').version_string()
@@ -589,11 +592,14 @@ def setup(app):
                  html=(rest_method_html, None))
     app.add_node(rest_expand_all,
                  html=(rest_expand_all_html, None))
+    app.add_node(http_code,
+                 html=(http_code_html, None))
 
     # This specifies all our directives that we're adding
     app.add_directive('rest_parameters', RestParametersDirective)
     app.add_directive('rest_method', RestMethodDirective)
     app.add_directive('rest_expand_all', RestExpandAllDirective)
+    app.add_directive('rest_status_code', HTTPResponseCodeDirective)
 
     # The doctree-read hook is used do the slightly crazy doc
     # transformation that we do to get the rest_method document
