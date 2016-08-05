@@ -185,11 +185,11 @@ rest_status_code
 ----------------
 
 The ``rest_status_code`` stanza is how you can show what HTTP status codes your
-API uses and what they indicate
+API uses and what they indicate.
 
 .. code-block:: rst
 
-   .. rest_status_code:: <sucess|failure> <location of status.yaml file>
+   .. rest_status_code:: <success|error> <location of http-status.yaml file>
 
 This stanza should be the first element after the narrative section of the
 method description.
@@ -223,9 +223,9 @@ An example from the Designate documentation is:
       - 401
       - 400
       - 500
-      - 409: duplcate_zone
+      - 409: duplicate_zone
 
-And corresponding entries in ``status.yaml``:
+And corresponding entries in ``http-status.yaml``:
 
 .. code-block:: yaml
 
@@ -237,34 +237,32 @@ And corresponding entries in ``status.yaml``:
         Request was successful.
     201:
       default: >
-        Resource was created and is ready to use. The ``Location`` header
-        will have the URL to the new item
-
+        Request has been fulfilled and new resource created. The ``Location`` header
+        has the URL to the new item.
     400:
       default: |
         Some content in the request was invalid
       zone_data_error: |
-        Some of the data for the
+        Some of the data for the zone in the request is unavailable to the service.
     401:
       default: |
-        User must authenticate before making a request
+        User must authenticate before making a request.
     403:
       default: |
          Policy does not allow current user to do this operation.
     405:
       default: |
-        Method is not valid for this endpoint. Not all endpoints allow all HTTP methods.
+        Method is not valid for this endpoint and resource.
     409:
      default: |
-        This operation conflicted with another operation on this resource
-     duplcate_zone: |
+        This resource has an action in progress that would conflict with this request.
+     duplicate_zone: |
         There is already a zone with this name.
     500:
       default: |
-        Something went wrong inside the service.
+        Something went wrong with the service which prevents it from fulfilling the request.
 
-
-This will create a 2 tables of response codes, one for success and one for
+This RST example creates two HTML tables of response codes, one for success and one for
 errors.
 
 status file format
@@ -273,21 +271,23 @@ status file format
 This is a simple yaml file, with a single object of status codes and the
 reasons that each would be used.
 
-Each status code **must** have a default entry. This is used when a code is
-used in a ``rest_status_code`` stanza with no value.
+Each status code **must** have a default entry in the status yaml file. The default entry is used
+in the ``rest_status_code`` stanza when a code is listed with no value or lookup key.
 
 There may be situations where the reason for a code may be different across
 endpoints, or a different message may be appropriate.
 
 In this case, adding a entry at the same level as the ``default`` and
-referencing that in the stanaza like so:
+referencing that in the stanza like so:
 
 .. code-block:: yaml
 
-   - 409: duplcate_zone
+   - 409: duplicate_zone
 
-This will overide the default message with the newly defined one.
+This will override the default message with the newly defined one.
 
+You can get a copy of a starter status file from the os-api-ref repository,
+by downloading :download:`http-status.yaml <http-status.yaml>`.
 
 rest_expand_all
 ---------------
