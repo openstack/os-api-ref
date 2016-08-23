@@ -6,7 +6,7 @@ devoted solely to the documentation of the API.
 
 Modify your ``source/conf.py`` file to include ``os_api_ref`` in the
 list of sphinx extensions. This extension assumes you are also using
-``oslosphinx`` for some of the styling, and may not fully work if you
+``openstackdocstheme`` for some of the styling, and may not fully work if you
 are not.
 
 .. code-block:: python
@@ -16,7 +16,6 @@ are not.
 
    extensions = [
        'os_api_ref',
-       'oslosphinx',
    ]
 
 

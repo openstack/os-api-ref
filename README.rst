@@ -11,7 +11,7 @@ to insert semi-structured data describing request and response
 parameters, and turn those into nice tables.
 
 The project also includes a set of styling (and javascript) that is
-expected to layer on top of an ``oslosphinx`` theme base. This
+expected to layer on top of an ``openstackdocstheme`` theme base. This
 provides a nice set of collapsing sections for REST methods and
 javascript controls to expand / collapse all sections.
 
