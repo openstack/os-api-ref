@@ -82,6 +82,13 @@ a.operation-anchor {
 .label-PATCH[href]:focus {
   background-color: #ec971f;
 }
+.label-COPY  {
+  background-color: #6666ff;
+}
+.label-COPY[href]:hover,
+.label-COPY[href]:focus {
+  background-color: #6699ff;
+}
 .label-DELETE {
   background-color: #d9534f;
 }
