@@ -11,4 +11,4 @@ testrepository>=0.0.18
 testtools>=1.4.0
 
 sphinx-testing
-bs4
+beautifulsoup4
