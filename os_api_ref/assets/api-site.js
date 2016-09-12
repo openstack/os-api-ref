@@ -29,7 +29,7 @@
             });
 
         // Expand the world. Wires up the expand all button, it turns
-        // off tye sync while it is running to save the costs with the
+        // off the sync while it is running to save the costs with the
         // history API.
         var expandAllActive = true;
         $('#expand-all').click(function () {
