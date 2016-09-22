@@ -11,6 +11,9 @@ tt.literal {
 larger, we need them smaller */
 blockquote { font-size: 1em; }
 
+.docs-book-wrapper {
+  width: 90% !important
+}
 
 tbody>tr:nth-child(odd)>td,
 tbody>tr:nth-child(odd)>th {
