@@ -1,3 +1,10 @@
+# valid path parameter
+server_id:
+  description: |
+    ID for server.
+  in: path
+  required: true
+  type: string
 # These are out of order, this should be a warning.
 name2:
   in: body

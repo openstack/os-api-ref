@@ -93,3 +93,11 @@ class TestWarnings(base.TestCase):
             ("ERROR: No parameters defined\n\n.."
              + " rest_parameters:: no_parameters.yaml\n"),
             self.warning)
+
+    def test_missing_path_parameter_in_stanza(self):
+        """Warning when path param not found in rest_parameter stanza."""
+
+        self.assertIn(
+            ("WARNING: No path parameter ``b_id`` found in"
+             + " rest_parameter stanza.\n"),
+            self.warning)

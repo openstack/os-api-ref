@@ -35,3 +35,21 @@ Nonexistent Parameter File
 
 .. rest_parameters:: no_parameters.yaml
 
+
+Check missing path parameters in stanza
+---------------------------------------
+
+.. rest_method:: GET /server/{server_id}/{new_id}/{new_id2}
+
+.. rest_parameters:: parameters.yaml
+
+   - server_id: server_id
+
+Check another missing path parameters in stanza
+-----------------------------------------------
+
+.. rest_method:: GET /server/{b_id}/{c_id2}/{server_id}
+
+.. rest_parameters:: parameters.yaml
+
+   - server_id: server_id
