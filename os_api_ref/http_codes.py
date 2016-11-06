@@ -13,7 +13,7 @@
 from docutils import nodes
 from docutils.parsers.rst.directives.tables import Table
 from docutils.statemachine import ViewList
-from httplib import responses
+from six.moves.http_client import responses
 import yaml
 
 # cache for file -> yaml so we only do the load and check of a yaml
