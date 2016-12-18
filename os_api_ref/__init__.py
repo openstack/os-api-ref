@@ -357,8 +357,13 @@ class RestParametersDirective(Table):
         # TODO(sdague): it would be good to dynamically set column
         # widths (or basically make the colwidth thing go away
         # entirely)
-        self.options['widths'] = (20, 10, 10, 60)
+        self.options['widths'] = [20, 10, 10, 60]
         self.col_widths = self.get_column_widths(self.max_cols)
+        if isinstance(self.col_widths, tuple):
+            # In docutils 0.13.1, get_column_widths returns a (widths,
+            # colwidths) tuple, where widths is a string (i.e. 'auto').
+            # See https://sourceforge.net/p/docutils/patches/120/.
+            self.col_widths = self.col_widths[1]
         # Actually convert the yaml
         title, messages = self.make_title()
         # self.app.info("Title %s, messages %s" % (title, messages))
