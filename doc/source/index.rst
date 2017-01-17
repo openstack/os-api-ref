@@ -3,13 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to os-api-ref's documentation!
-========================================================
+==============================================
+Welcome to os-api-ref developer documentation!
+==============================================
 
-.. include:: readme.rst
-.. include:: installation.rst
-.. include:: usage.rst
-.. include:: contributing.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   installation
+   usage
+   contributing
 
 Indices and tables
 ==================
