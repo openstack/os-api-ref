@@ -14,6 +14,7 @@
 
 from collections import OrderedDict
 import os
+import re
 
 from docutils import nodes
 from docutils.parsers.rst.directives.tables import Table
@@ -179,6 +180,12 @@ class RestMethodDirective(Directive):
 
         node['method'] = method
         node['url'] = url
+
+        # Extract the path parameters from the url
+        env = self.state.document.settings.env
+        env.path_params = []
+        env.path_params = re.findall("{[a-zA-Z][a-zA-Z_0-9]*}", url)
+
         node['target'] = self.state.parent.attributes['ids'][0]
         node['css_classes'] = ""
         if node['min_version']:
@@ -323,6 +330,26 @@ class RestParametersDirective(Table):
                             self.state_machine.node.line),
                         ("No field definition for ``%s`` found in ``%s``. "
                          " Skipping." % (ref, fpath)))
+
+                # Check for path params in stanza
+                for i, param in enumerate(self.env.path_params):
+                    if (param.rstrip('}').lstrip('{')) == name:
+                        del self.env.path_params[i]
+                        break
+                    else:
+                        continue
+
+        if len(self.env.path_params) is not 0:
+            # Warn that path parameters are not set in rest_parameter
+            # stanza and will not appear in the generated table.
+            for param in self.env.path_params:
+                self.env.warn(
+                    "%s:%s " % (
+                        self.state_machine.node.source,
+                        self.state_machine.node.line),
+                    ("No path parameter ``%s`` found in rest_parameter"
+                     " stanza.\n"
+                     % param.rstrip('}').lstrip('{')))
 
         # self.app.info("New content %s" % new_content)
         self.yaml = new_content
