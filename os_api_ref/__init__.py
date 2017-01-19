@@ -503,7 +503,9 @@ def rest_method_html(self, node):
 <div class="row">
     <div class="col-md-2">
     <div class="operation">
-    <a name="%(target)s" class="operation-anchor" href="#%(target)s">
+    <a name="%(target)s" class="operation-anchor" href="#%(target)s"
+      onclick="window.location.hash = hash;"
+      >
       <span class="glyphicon glyphicon-link"></span></a>
     <span class="label label-%(method)s">%(method)s</span>
     </div>
