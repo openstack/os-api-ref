@@ -65,7 +65,8 @@ in both naming and ordering of parameters at every declaration.
 """
 
 
-def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
+def ordered_load(
+        stream, Loader=yaml.SafeLoader, object_pairs_hook=OrderedDict):
     """Load yaml as an ordered dict
 
     This allows us to inspect the order of the file on disk to make
@@ -299,7 +300,7 @@ class RestParametersDirective(Table):
             return
 
         content = "\n".join(self.content)
-        parsed = yaml.load(content)
+        parsed = yaml.safe_load(content)
         # self.app.info("Params loaded is %s" % parsed)
         # self.app.info("Lookup table looks like %s" % lookup)
         new_content = list()

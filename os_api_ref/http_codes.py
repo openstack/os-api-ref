@@ -47,7 +47,7 @@ class HTTPResponseCodeDirective(Table):
         # self.app.info("Fpath: %s" % fpath)
         try:
             with open(fpath, 'r') as stream:
-                lookup = yaml.load(stream)
+                lookup = yaml.safe_load(stream)
         except IOError:
             self.env.warn(
                 self.env.docname,
@@ -124,7 +124,7 @@ class HTTPResponseCodeDirective(Table):
 
     def _load_codes(self):
         content = "\n".join(self.content)
-        parsed = yaml.load(content)
+        parsed = yaml.safe_load(content)
 
         new_content = list()
 
