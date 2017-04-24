@@ -178,7 +178,7 @@ min_version
 
 max_version
   the last version that includes this parameter. Will render
-  a *Deprecated in $version* stanza in the html output.
+  a *Available until $version* stanza in the html output.
 
 
 rest_status_code

@@ -441,7 +441,7 @@ class RestParametersDirective(Table):
                                         str(min_version).replace('.', '_'))
                     classes.append(min_ver_css_name)
                 if max_version:
-                    desc += ("\n\n**Deprecated in version %s**\n" %
+                    desc += ("\n\n**Available until version %s**\n" %
                              max_version)
                     max_ver_css_name = ("rp_max_ver_" +
                                         str(max_version).replace('.', '_'))

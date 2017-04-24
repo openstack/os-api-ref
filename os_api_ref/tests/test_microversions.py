@@ -87,7 +87,7 @@ class TestMicroversions(base.TestCase):
 <td>body</td>
 <td>string</td>
 <td><p class="first">The name of things</p>
-<p class="last"><strong>Deprecated in version 2.20</strong></p>
+<p class="last"><strong>Available until version 2.20</strong></p>
 </td>
 </tr>
 </tbody>
