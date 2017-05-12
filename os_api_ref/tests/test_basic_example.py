@@ -78,10 +78,10 @@ class TestBasicExample(base.TestCase):
 
         table = """<table border="1" class="docutils">
 <colgroup>
-<col width="20%"></col>
-<col width="10%"></col>
-<col width="10%"></col>
-<col width="60%"></col>
+<col width="20%"/>
+<col width="10%"/>
+<col width="10%"/>
+<col width="60%"/>
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
@@ -105,8 +105,8 @@ class TestBasicExample(base.TestCase):
 
         success_table = """table border="1" class="docutils">
 <colgroup>
-<col width="30%"></col>
-<col width="70%"></col>
+<col width="30%"/>
+<col width="70%"/>
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Code</th>
@@ -129,8 +129,8 @@ class TestBasicExample(base.TestCase):
 
         error_table = """<table border="1" class="docutils">
 <colgroup>
-<col width="30%"></col>
-<col width="70%"></col>
+<col width="30%"/>
+<col width="70%"/>
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Code</th>

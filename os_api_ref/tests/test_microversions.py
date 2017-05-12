@@ -58,10 +58,10 @@ class TestMicroversions(base.TestCase):
         table = """<div class="api-detail collapse section" id="list-servers-detail">
 <table border="1" class="docutils">
 <colgroup>
-<col width="20%"></col>
-<col width="10%"></col>
-<col width="10%"></col>
-<col width="60%"></col>
+<col width="20%"/>
+<col width="10%"/>
+<col width="10%"/>
+<col width="60%"/>
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
