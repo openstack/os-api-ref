@@ -49,9 +49,9 @@ class HTTPResponseCodeDirective(Table):
             with open(fpath, 'r') as stream:
                 lookup = yaml.safe_load(stream)
         except IOError:
-            self.env.warn(
-                self.env.docname,
-                "Parameters file %s not found" % fpath)
+            self.app.warn(
+                "Parameters file %s not found" % fpath,
+                (self.env.docname, None))
             return
         except yaml.YAMLError as exc:
             self.app.warn(exc)

@@ -62,7 +62,7 @@ class TestWarnings(base.TestCase):
              + "OrderedDict([('description',"
              + " 'name_1 is missing type field.\\n'), ('in', 'body'),"
              + " ('required', True)]). "
-             + "'NoneType' object has no attribute 'split'\n"),
+             + "'NoneType' object has no attribute 'split'"),
             self.warning)
 
     def test_invalid_parameter_definition(self):
@@ -81,15 +81,15 @@ class TestWarnings(base.TestCase):
     def test_no_parameters_set(self):
         """Error when parameters are not set in rest_parameters stanza."""
         self.assertIn(
-            ("ERROR: No parameters defined\n\n.."
-             + " rest_parameters:: parameters.yaml\n"),
+            ("No parameters defined\n\n.."
+             + " rest_parameters:: parameters.yaml"),
             self.warning)
 
     def test_parameter_file_not_exist(self):
         """Error when parameter file does not exist"""
         self.assertIn(
-            ("ERROR: No parameters defined\n\n.."
-             + " rest_parameters:: no_parameters.yaml\n"),
+            ("No parameters defined\n\n.."
+             + " rest_parameters:: no_parameters.yaml"),
             self.warning)
 
     def test_missing_path_parameter_in_stanza(self):

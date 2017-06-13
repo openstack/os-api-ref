@@ -223,9 +223,9 @@ class RestParametersDirective(Table):
             with open(fpath, 'r') as stream:
                 lookup = ordered_load(stream)
         except IOError:
-            self.env.warn(
-                self.env.docname,
-                "Parameters file %s not found" % fpath)
+            self.app.warn(
+                "Parameters file %s not found" % fpath,
+                (self.env.docname, None))
             return
         except yaml.YAMLError as exc:
             self.app.warn(exc)
@@ -234,9 +234,9 @@ class RestParametersDirective(Table):
         if lookup:
             self._check_yaml_sorting(fpath, lookup)
         else:
-            self.env.warn(
-                self.env.docname,
-                "Parameters file is empty %s" % fpath)
+            self.app.warn(
+                "Parameters file is empty %s" % fpath,
+                (self.env.docname, None))
             return
 
         YAML_CACHE[fpath] = lookup
@@ -306,29 +306,27 @@ class RestParametersDirective(Table):
         new_content = list()
         for paramlist in parsed:
             if not isinstance(paramlist, dict):
-                self.env.warn(
-                    "%s:%s" % (
-                        self.state_machine.node.source,
-                        self.state_machine.node.line),
+                self.app.warn(
                     ("Invalid parameter definition ``%s``. Expected "
                      "format: ``name: reference``. "
-                     " Skipping." % paramlist))
+                     " Skipping." % paramlist),
+                    (self.state_machine.node.source,
+                     self.state_machine.node.line))
                 continue
             for name, ref in paramlist.items():
                 if ref in lookup:
                     new_content.append((name, lookup[ref]))
                 else:
                     # TODO(sdague): this provides a kind of confusing
-                    # error message because env.warn isn't meant to be
+                    # error message because app.warn isn't meant to be
                     # used this way, however it does provide a way to
                     # track down where the parameters list is that is
                     # wrong. So it's good enough for now.
-                    self.env.warn(
-                        "%s:%s " % (
-                            self.state_machine.node.source,
-                            self.state_machine.node.line),
+                    self.app.warn(
                         ("No field definition for ``%s`` found in ``%s``. "
-                         " Skipping." % (ref, fpath)))
+                         " Skipping." % (ref, fpath)),
+                        (self.state_machine.node.source,
+                         self.state_machine.node.line))
 
                 # Check for path params in stanza
                 for i, param in enumerate(self.env.path_params):
@@ -342,13 +340,12 @@ class RestParametersDirective(Table):
             # Warn that path parameters are not set in rest_parameter
             # stanza and will not appear in the generated table.
             for param in self.env.path_params:
-                self.env.warn(
-                    "%s:%s " % (
-                        self.state_machine.node.source,
-                        self.state_machine.node.line),
+                self.app.warn(
                     ("No path parameter ``%s`` found in rest_parameter"
                      " stanza.\n"
-                     % param.rstrip('}').lstrip('{')))
+                     % param.rstrip('}').lstrip('{')),
+                    (self.state_machine.node.source,
+                     self.state_machine.node.line))
 
         # self.app.info("New content %s" % new_content)
         self.yaml = new_content
