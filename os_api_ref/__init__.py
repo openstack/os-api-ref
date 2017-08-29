@@ -15,10 +15,10 @@ import os
 import re
 
 from docutils import nodes
+from docutils.parsers import rst
 from docutils.parsers.rst.directives.tables import Table
 from docutils.statemachine import ViewList
 import pbr.version
-from sphinx.util.compat import Directive
 from sphinx.util.osutil import copyfile
 import yaml
 
@@ -123,7 +123,7 @@ class rest_expand_all(nodes.Part, nodes.Element):
     pass
 
 
-class RestExpandAllDirective(Directive):
+class RestExpandAllDirective(rst.Directive):
     # This tells sphinx that the directive will need to generate
     # content during the final build phase.
     has_content = True
@@ -149,7 +149,7 @@ class RestExpandAllDirective(Directive):
         return [node]
 
 
-class RestMethodDirective(Directive):
+class RestMethodDirective(rst.Directive):
 
     # this enables content in the directive
     has_content = True
