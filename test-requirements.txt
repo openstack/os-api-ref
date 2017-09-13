@@ -9,5 +9,5 @@ python-subunit>=0.0.18 # Apache-2.0/BSD
 oslosphinx>=4.7.0 # Apache-2.0
 testrepository>=0.0.18 # Apache-2.0/BSD
 testtools>=1.4.0 # MIT
-sphinx-testing # BSD License
-beautifulsoup4 # MIT
+sphinx-testing>=0.7.2 # BSD License
+beautifulsoup4>=4.6.0 # MIT
