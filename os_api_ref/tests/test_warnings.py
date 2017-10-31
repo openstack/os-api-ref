@@ -38,7 +38,7 @@ class TestWarnings(base.TestCase):
         self.app.build()
         self.status = status.getvalue()
         self.warning = warning.getvalue()
-        self.html = (app.outdir / 'index.html').read_text()
+        self.html = (app.outdir / 'index.html').read_text(encoding='utf-8')
         self.soup = BeautifulSoup(self.html, 'html.parser')
         self.content = str(self.soup)
 
