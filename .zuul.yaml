@@ -1,0 +1,19 @@
+- job:
+    name: os-api-ref-nova-src
+    parent: build-openstack-api-ref
+    description: |
+      Run the api-ref job against nova with proposed os-api-ref change.
+    vars:
+      zuul_work_dir: src/git.openstack.org/openstack/nova
+    required-projects:
+      - openstack/nova
+      - openstack/os-api-ref
+
+- project:
+    name: openstack/os-api-ref
+    check:
+      jobs:
+        - os-api-ref-nova-src
+    gate:
+      jobs:
+        - os-api-ref-nova-src
