@@ -170,7 +170,7 @@ required
 
 type
   the javascript/json type of the field. one of ``boolean``, ``int``,
-  ``float``, ``string``, ``array``, ``object``.
+  ``float``, ``string``, ``uuid``, ``array``, ``object``.
 
 min_version
   the microversion that this parameter was introduced at. Will render
