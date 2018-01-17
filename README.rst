@@ -2,8 +2,8 @@
 Team and repository tags
 ========================
 
-.. image:: http://governance.openstack.org/badges/os-api-ref.svg
-    :target: http://governance.openstack.org/reference/tags/index.html
+.. image:: https://governance.openstack.org/tc/badges/os-api-ref.svg
+    :target: https://governance.openstack.org/tc/reference/tags/index.html
 
 .. Change things from this point on
 
@@ -108,5 +108,5 @@ a pointer to more precise descriptions for each code. For example::
 
 
 * Free software: Apache license
-* Documentation: http://docs.openstack.org/developer/os-api-ref
-* Source: http://git.openstack.org/cgit/openstack/os-api-ref
+* Documentation: https://docs.openstack.org/os-api-ref/latest/
+* Source: https://git.openstack.org/cgit/openstack/os-api-ref
