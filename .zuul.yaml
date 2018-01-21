@@ -10,7 +10,6 @@
       - openstack/os-api-ref
 
 - project:
-    name: openstack/os-api-ref
     check:
       jobs:
         - os-api-ref-nova-src
