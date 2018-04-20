@@ -20,6 +20,7 @@ from docutils.parsers.rst.directives.tables import Table
 from docutils.statemachine import ViewList
 import pbr.version
 import six
+from sphinx.util import logging
 from sphinx.util.osutil import copyfile
 import yaml
 
@@ -29,6 +30,8 @@ from os_api_ref.http_codes import HTTPResponseCodeDirective
 
 __version__ = pbr.version.VersionInfo(
     'os_api_ref').version_string()
+
+LOG = logging.getLogger(__name__)
 
 # This is to allow for a graceful swap from oslosphinx to openstackdocstheme
 THEME = 'openstackdocstheme'
@@ -167,8 +170,6 @@ class RestMethodDirective(rst.Directive):
         lineno = self.state_machine.abs_line_number()
         target = nodes.target()
         section = nodes.section(classes=["detail-control"])
-        # env = self.state.document.settings.env
-        # env.app.info("Parent %s" % self.state.parent.attributes)
 
         node = rest_method()
 
@@ -219,25 +220,22 @@ class RestParametersDirective(Table):
             return YAML_CACHE[fpath]
 
         lookup = {}
-        # self.app.info("Fpath: %s" % fpath)
         try:
             with open(fpath, 'r') as stream:
                 lookup = ordered_load(stream)
         except IOError:
-            self.app.warn(
-                "Parameters file %s not found" % fpath,
-                (self.env.docname, None))
+            LOG.warning("Parameters file not found, %s", fpath,
+                        location=(self.env.docname, None))
             return
         except yaml.YAMLError as exc:
-            self.app.warn(exc)
+            LOG.exception(exc_info=exc)
             raise
 
         if lookup:
             self._check_yaml_sorting(fpath, lookup)
         else:
-            self.app.warn(
-                "Parameters file is empty %s" % fpath,
-                (self.env.docname, None))
+            LOG.warning("Parameters file is empty, %s", fpath,
+                        location=(self.env.docname, None))
             return
 
         YAML_CACHE[fpath] = lookup
@@ -265,13 +263,11 @@ class RestParametersDirective(Table):
 
             # use of an invalid 'in' value
             if value['in'] not in sections:
-                self.app.warn(
-                    "``%s`` is not a valid value for 'in' (must be one of: %s)"
-                    ". (see ``%s``)" % (
-                        value['in'],
-                        ", ".join(sorted(sections.keys())),
-                        key)
-                    )
+                LOG.warning("``%s`` is not a valid value for 'in' (must be "
+                            "one of: %s). (see ``%s``)",
+                            value['in'],
+                            ", ".join(sorted(sections.keys())),
+                            key)
                 continue
 
             if last is None:
@@ -281,17 +277,13 @@ class RestParametersDirective(Table):
             current_section = value['in']
             last_section = last[1]['in']
             if sections[current_section] < sections[last_section]:
-                self.app.warn(
-                    "Section out of order. All parameters in section ``%s`` "
-                    "should be after section ``%s``. (see ``%s``)" % (
-                        last_section,
-                        current_section,
-                        last[0]))
+                LOG.warning("Section out of order. All parameters in section "
+                            "``%s`` should be after section ``%s``. (see "
+                            "``%s``)", last_section, current_section, last[0])
             if (sections[value['in']] == sections[last[1]['in']] and
                 key.lower() < last[0].lower()):
-                self.app.warn(
-                    "Parameters out of order ``%s`` should be after ``%s``" % (
-                        last[0], key))
+                LOG.warning("Parameters out of order ``%s`` should be after "
+                            "``%s``", last[0], key)
             last = (key, value)
 
     def yaml_from_file(self, fpath):
@@ -307,17 +299,14 @@ class RestParametersDirective(Table):
 
         content = "\n".join(self.content)
         parsed = yaml.safe_load(content)
-        # self.app.info("Params loaded is %s" % parsed)
-        # self.app.info("Lookup table looks like %s" % lookup)
         new_content = list()
         for paramlist in parsed:
             if not isinstance(paramlist, dict):
-                self.app.warn(
-                    ("Invalid parameter definition ``%s``. Expected "
-                     "format: ``name: reference``. "
-                     " Skipping." % paramlist),
-                    (self.state_machine.node.source,
-                     self.state_machine.node.line))
+                location = (self.state_machine.node.source,
+                            self.state_machine.node.line)
+                LOG.warning("Invalid parameter definition ``%s``. Expected "
+                            "format: ``name: reference``. Skipping.",
+                            paramlist, location=location)
                 continue
             for name, ref in paramlist.items():
                 if ref in lookup:
@@ -328,11 +317,10 @@ class RestParametersDirective(Table):
                     # used this way, however it does provide a way to
                     # track down where the parameters list is that is
                     # wrong. So it's good enough for now.
-                    self.app.warn(
-                        ("No field definition for ``%s`` found in ``%s``. "
-                         " Skipping." % (ref, fpath)),
-                        (self.state_machine.node.source,
-                         self.state_machine.node.line))
+                    location = (self.state_machine.node.source,
+                                self.state_machine.node.line)
+                    LOG.warning("No field definition for ``%s`` found in "
+                                "``%s``. Skipping.", ref, fpath)
 
                 # Check for path params in stanza
                 for i, param in enumerate(self.env.path_params):
@@ -346,19 +334,15 @@ class RestParametersDirective(Table):
             # Warn that path parameters are not set in rest_parameter
             # stanza and will not appear in the generated table.
             for param in self.env.path_params:
-                self.app.warn(
-                    ("No path parameter ``%s`` found in rest_parameter"
-                     " stanza.\n"
-                     % param.rstrip('}').lstrip('{')),
-                    (self.state_machine.node.source,
-                     self.state_machine.node.line))
+                location = (self.state_machine.node.source,
+                            self.state_machine.node.line)
+                LOG.warning("No path parameter ``%s`` found in rest_parameter"
+                            " stanza.\n", param.rstrip('}').lstrip('{'))
 
-        # self.app.info("New content %s" % new_content)
         self.yaml = new_content
 
     def run(self):
         self.env = self.state.document.settings.env
-        self.app = self.env.app
 
         # Make sure we have some content, which should be yaml that
         # defines some parameters.
@@ -395,7 +379,6 @@ class RestParametersDirective(Table):
             self.col_widths = self.col_widths[1]
         # Actually convert the yaml
         title, messages = self.make_title()
-        # self.app.info("Title %s, messages %s" % (title, messages))
         table_node = self.build_table()
         self.add_name(table_node)
         if title:
@@ -435,7 +418,6 @@ class RestParametersDirective(Table):
         rows = []
         groups = []
         try:
-            # self.app.info("Parsed content is: %s" % self.yaml)
             for key, values in self.yaml:
                 min_version = values.get('min_version', '')
                 max_version = values.get('max_version', '')
@@ -463,8 +445,8 @@ class RestParametersDirective(Table):
                 rows.append(trow)
         except AttributeError as exc:
             if 'key' in locals():
-                self.app.warn("Failure on key: %s, values: %s. %s" %
-                              (key, values, exc))
+                LOG.warning("Failure on key: %s, values: %s. %s",
+                            key, values, exc)
             else:
                 rows.append(self.show_no_yaml_error())
         return rows, groups
@@ -657,8 +639,8 @@ def copy_assets(app, exception):
     )
     if app.builder.name != 'html' or exception:
         return
-    app.info('Copying assets: %s' % ', '.join(assets))
-    app.info('Copying fonts: %s' % ', '.join(fonts))
+    LOG.info('Copying assets: %s', ', '.join(assets))
+    LOG.info('Copying fonts: %s', ', '.join(fonts))
     for asset in assets:
         dest = os.path.join(app.builder.outdir, '_static', asset)
         source = os.path.abspath(os.path.dirname(__file__))
