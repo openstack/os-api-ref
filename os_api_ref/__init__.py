@@ -257,6 +257,11 @@ class RestParametersDirective(Table):
 
         last = None
         for key, value in yaml_data.items():
+            if not isinstance(value, dict):
+                raise Exception('Expected a dict for {0}; got {0}={1}).\n'
+                                'You probably have indentation typo in your'
+                                'YAML source'.format(key, value))
+
             # use of an invalid 'in' value
             if value['in'] not in sections:
                 self.app.warn(
