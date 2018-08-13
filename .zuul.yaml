@@ -15,7 +15,7 @@
       - openstack-python35-jobs
       - openstack-python36-jobs
       - check-requirements
-      - publish-openstack-sphinx-docs
+      - publish-openstack-docs-pti
     check:
       jobs:
         - os-api-ref-nova-src
