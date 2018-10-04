@@ -18,9 +18,24 @@ Tests for `os_api_ref` module.
 """
 
 from bs4 import BeautifulSoup
+import sphinx
 from sphinx_testing import with_app
 
 from os_api_ref.tests import base
+
+
+# FIXME(stephenfin): This is horrible. We're monkeypatching this to work around
+# the fact that Sphinx 1.8+ started called 'abspath' from within the
+# 'sphinx.application.Application' class [1]. This means our careful use of
+# 'sphinx_testing.path.path' for 'Application.outdir' etc. gets stomped on.
+# We're correcting that but we're doing so globally because mock doesn't work
+# for some reason and this is bound to have some side effects
+#
+# [1] https://github.com/sphinx-doc/sphinx/commit/3a85b3502f
+try:
+    sphinx.application.abspath = lambda x: x
+except ImportError:  # Sphinx < 1.8
+    pass
 
 
 class TestBasicExample(base.TestCase):
