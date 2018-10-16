@@ -14,7 +14,10 @@ from docutils import nodes
 from docutils.parsers.rst.directives.tables import Table
 from docutils.statemachine import ViewList
 from six.moves.http_client import responses
+from sphinx.util import logging
 import yaml
+
+LOG = logging.getLogger(__name__)
 
 # cache for file -> yaml so we only do the load and check of a yaml
 # file once during a sphinx processing run.
@@ -44,17 +47,17 @@ class HTTPResponseCodeDirective(Table):
         if fpath in HTTP_YAML_CACHE:
             return HTTP_YAML_CACHE[fpath]
 
-        # self.app.info("Fpath: %s" % fpath)
+        # LOG.info("Fpath: %s" % fpath)
         try:
             with open(fpath, 'r') as stream:
                 lookup = yaml.safe_load(stream)
         except IOError:
-            self.app.warn(
+            LOG.warning(
                 "Parameters file %s not found" % fpath,
                 (self.env.docname, None))
             return
         except yaml.YAMLError as exc:
-            self.app.warn(exc)
+            LOG.warning(exc)
             raise
 
         HTTP_YAML_CACHE[fpath] = lookup
@@ -62,7 +65,6 @@ class HTTPResponseCodeDirective(Table):
 
     def run(self):
         self.env = self.state.document.settings.env
-        self.app = self.env.app
 
         # Make sure we have some content, which should be yaml that
         # defines some parameters.
@@ -85,7 +87,7 @@ class HTTPResponseCodeDirective(Table):
 
         self.status_defs = self._load_status_file(status_defs_file)
 
-        # self.app.info("%s" % str(self.status_defs))
+        # LOG.info("%s" % str(self.status_defs))
 
         if status_type not in self.status_types:
             error = self.state_machine.reporter.error(
@@ -109,7 +111,7 @@ class HTTPResponseCodeDirective(Table):
             self.col_widths = self.col_widths[1]
         # Actually convert the yaml
         title, messages = self.make_title()
-        # self.app.info("Title %s, messages %s" % (title, messages))
+        # LOG.info("Title %s, messages %s" % (title, messages))
         table_node = self.build_table()
         self.add_name(table_node)
 
@@ -138,7 +140,7 @@ class HTTPResponseCodeDirective(Table):
                             (code, self.status_defs[code][reason])
                         )
                 except KeyError:
-                    self.app.warn(
+                    LOG.warning(
                         "Could not find %s for code %s" % (reason, code))
                     new_content.append(
                         (code, self.status_defs[code]['default']))
@@ -191,7 +193,7 @@ class HTTPResponseCodeDirective(Table):
         rows = []
         groups = []
         try:
-            # self.app.info("Parsed content is: %s" % self.yaml)
+            # LOG.info("Parsed content is: %s" % self.yaml)
             for code, desc in self.yaml:
 
                 h_code = http_code()
@@ -204,8 +206,8 @@ class HTTPResponseCodeDirective(Table):
                 rows.append(trow)
         except AttributeError as exc:
             # if 'key' in locals():
-            self.app.warn("Failure on key: %s, values: %s. %s" %
-                          (code, desc, exc))
+            LOG.warning("Failure on key: %s, values: %s. %s" %
+                        (code, desc, exc))
             # else:
             #     rows.append(self.show_no_yaml_error())
         return rows, groups
