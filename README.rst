@@ -43,7 +43,7 @@ TODO
 A list, in no particular order, of things we should do in this
 project. If you would like to contribute to any of these please show
 up in ``#openstack-dev`` on IRC and ask for ``sdague`` or ``mugsie``
-to discuss or send an email to the openstack-dev@lists.openstack.org list
+to discuss or send an email to the openstack-discuss@lists.openstack.org list
 with [api] in the subject line.
 
 * Enhance documentation with more examples and best practices
