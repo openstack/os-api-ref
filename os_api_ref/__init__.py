@@ -637,7 +637,8 @@ def copy_assets(app, exception):
         'glyphicons-halflings-regular.ttf',
         'glyphicons-halflings-regular.woff'
     )
-    if app.builder.name != 'html' or exception:
+    builders = ('html', 'readthedocs', 'readthedocssinglehtmllocalmedia')
+    if app.builder.name not in builders or exception:
         return
     LOG.info('Copying assets: %s', ', '.join(assets))
     LOG.info('Copying fonts: %s', ', '.join(fonts))
@@ -665,12 +666,9 @@ def setup(app):
     # TODO(sdague): if someone wants to support latex/pdf, or man page
     # generation using these stanzas, here is where you'd need to
     # specify content specific renderers.
-    app.add_node(rest_method,
-                 html=(rest_method_html, None))
-    app.add_node(rest_expand_all,
-                 html=(rest_expand_all_html, None))
-    app.add_node(http_code,
-                 html=(http_code_html, None))
+    app.add_node(rest_method, html=(rest_method_html, None))
+    app.add_node(rest_expand_all, html=(rest_expand_all_html, None))
+    app.add_node(http_code, html=(http_code_html, None))
 
     # This specifies all our directives that we're adding
     app.add_directive('rest_parameters', RestParametersDirective)
