@@ -12,6 +12,7 @@
 
 from collections import OrderedDict
 import os
+import random
 import re
 
 from docutils import nodes
@@ -198,7 +199,8 @@ class RestMethodDirective(rst.Directive):
 
         # We need to build a temporary target that we can replace
         # later in the processing to get the TOC to resolve correctly.
-        temp_target = "%s-selector" % node['target']
+        temp_target = "%s-%d-selector" % (node['target'],
+                                          random.randint(1, 1000))
         target = nodes.target(ids=[temp_target])
         self.state.add_target(temp_target, '', target, lineno)
         section += node
