@@ -45,13 +45,13 @@ class TestMicroversions(base.TestCase):
     def test_rest_method(self):
         """Test that min / max mv css class attributes are set"""
         content = self.soup.find_all(class_='rp_min_ver_2_17')
-        self.assertIn(
-            '<div class="operation-grp rp_min_ver_2_17 rp_max_ver_2_19 ">',
-            str(content[0]))
+        self.assertRegexpMatches(
+            str(content[0]),
+            '^<div class="operation-grp rp_min_ver_2_17 rp_max_ver_2_19 ?"')
         content = self.soup.find_all(class_='rp_max_ver_2_19')
-        self.assertIn(
-            '<div class="operation-grp rp_min_ver_2_17 rp_max_ver_2_19 ">',
-            str(content[0]))
+        self.assertRegexpMatches(
+            str(content[0]),
+            '^<div class="operation-grp rp_min_ver_2_17 rp_max_ver_2_19 ?"')
 
     def test_parameters_table(self):
         """Test that min / max mv css class attributes are set in params"""
