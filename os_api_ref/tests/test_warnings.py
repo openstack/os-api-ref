@@ -58,18 +58,18 @@ class TestWarnings(base.TestCase):
     def test_missing_field(self):
         """Warning when missing type field in parameter file."""
         self.assertIn(
-            ("WARNING: Failure on key: name, values: "
-             + "OrderedDict([('description',"
-             + " 'name_1 is missing type field.\\n'), ('in', 'body'),"
-             + " ('required', True)]). "
-             + "'NoneType' object has no attribute 'split'"),
+            ("WARNING: Failure on key: name, values: " +
+             "OrderedDict([('description'," +
+             " 'name_1 is missing type field.\\n'), ('in', 'body')," +
+             " ('required', True)]). " +
+             "'NoneType' object has no attribute 'split'"),
             self.warning)
 
     def test_invalid_parameter_definition(self):
         """Warning when parameter definition is invalid."""
         self.assertIn(
-            ("WARNING: Invalid parameter definition ``invalid_name``. "
-             + "Expected format: ``name: reference``. "),
+            ("WARNING: Invalid parameter definition ``invalid_name``. " +
+             "Expected format: ``name: reference``. "),
             self.warning)
 
     def test_empty_parameter_file(self):
@@ -81,21 +81,21 @@ class TestWarnings(base.TestCase):
     def test_no_parameters_set(self):
         """Error when parameters are not set in rest_parameters stanza."""
         self.assertIn(
-            ("No parameters defined\n\n.."
-             + " rest_parameters:: parameters.yaml"),
+            ("No parameters defined\n\n.." +
+             " rest_parameters:: parameters.yaml"),
             self.warning)
 
     def test_parameter_file_not_exist(self):
         """Error when parameter file does not exist"""
         self.assertIn(
-            ("No parameters defined\n\n.."
-             + " rest_parameters:: no_parameters.yaml"),
+            ("No parameters defined\n\n.." +
+             " rest_parameters:: no_parameters.yaml"),
             self.warning)
 
     def test_missing_path_parameter_in_stanza(self):
         """Warning when path param not found in rest_parameter stanza."""
 
         self.assertIn(
-            ("WARNING: No path parameter ``b_id`` found in"
-             + " rest_parameter stanza.\n"),
+            ("WARNING: No path parameter ``b_id`` found in" +
+             " rest_parameter stanza.\n"),
             self.warning)
