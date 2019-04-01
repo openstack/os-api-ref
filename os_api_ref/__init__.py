@@ -34,10 +34,6 @@ __version__ = pbr.version.VersionInfo(
 
 LOG = logging.getLogger(__name__)
 
-# This is to allow for a graceful swap from oslosphinx to openstackdocstheme
-THEME = 'openstackdocstheme'
-
-
 """This provides a sphinx extension able to create the HTML needed
 for the api-ref website.
 
