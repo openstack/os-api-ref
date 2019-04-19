@@ -4,7 +4,7 @@
     description: |
       Run the api-ref job against nova with proposed os-api-ref change.
     vars:
-      zuul_work_dir: src/git.openstack.org/openstack/nova
+      zuul_work_dir: src/opendev.org/openstack/nova
     required-projects:
       - openstack/nova
       - openstack/os-api-ref
