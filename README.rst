@@ -109,4 +109,4 @@ a pointer to more precise descriptions for each code. For example::
 
 * Free software: Apache license
 * Documentation: https://docs.openstack.org/os-api-ref/latest/
-* Source: https://git.openstack.org/cgit/openstack/os-api-ref
+* Source: https://opendev.org/openstack/os-api-ref
