@@ -94,7 +94,7 @@ class TestBasicExample(base.TestCase):
         # TODO(stephenfin): Drop support for this once we drop support for both
         # Python 2.7 and Sphinx < 2.0, likely in "U"
         if sphinx.version_info >= (2, 0, 0):
-            table = """<table class="docutils align-center">
+            table = """<table class="docutils align-{}">
 <colgroup>
 <col style="width: 20%"/>
 <col style="width: 10%"/>
@@ -115,7 +115,8 @@ class TestBasicExample(base.TestCase):
 <td><p>The name of things</p></td>
 </tr>
 </tbody>
-</table>"""
+</table>""".format('center' if sphinx.version_info < (2, 1, 0)
+                   else 'default')
         else:
             table = """<table border="1" class="docutils">
 <colgroup>
@@ -147,7 +148,7 @@ class TestBasicExample(base.TestCase):
         # TODO(stephenfin): Drop support for this once we drop support for both
         # Python 2.7 and Sphinx < 2.0, likely in "U"
         if sphinx.version_info >= (2, 0, 0):
-            success_table = """<table class="docutils align-center">
+            success_table = """<table class="docutils align-{}">
 <colgroup>
 <col style="width: 30%"/>
 <col style="width: 70%"/>
@@ -168,9 +169,10 @@ class TestBasicExample(base.TestCase):
 <td><p>Resource was created and is ready to use.</p></td>
 </tr>
 </tbody>
-</table>"""
+</table>""".format('center' if sphinx.version_info < (2, 1, 0)
+                   else 'default')
 
-            error_table = """<table class="docutils align-center">
+            error_table = """<table class="docutils align-{}">
 <colgroup>
 <col style="width: 30%"/>
 <col style="width: 70%"/>
@@ -200,7 +202,8 @@ class TestBasicExample(base.TestCase):
 <td><p>There is already a zone with this name.</p></td>
 </tr>
 </tbody>
-</table>"""
+</table>""".format('center' if sphinx.version_info < (2, 1, 0)
+                   else 'default')
         else:
             success_table = """table border="1" class="docutils">
 <colgroup>

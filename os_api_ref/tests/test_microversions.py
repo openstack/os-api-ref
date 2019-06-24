@@ -58,7 +58,7 @@ class TestMicroversions(base.TestCase):
         """Test that min / max mv css class attributes are set in params"""
         if sphinx.version_info >= (2, 0, 0):
             table = """<div class="api-detail collapse section" id="list-servers-detail">
-<table class="docutils align-center">
+<table class="docutils align-{}">
 <colgroup>
 <col style="width: 20%"/>
 <col style="width: 10%"/>
@@ -95,7 +95,7 @@ class TestMicroversions(base.TestCase):
 </tbody>
 </table>
 </div>
-"""  # noqa
+""".format('center' if sphinx.version_info < (2, 1, 0) else 'default')  # noqa
         else:
             table = """<div class="api-detail collapse section" id="list-servers-detail">
 <table border="1" class="docutils">
