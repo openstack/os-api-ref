@@ -206,6 +206,7 @@ class RestMethodDirective(rst.Directive):
 
         return [target, section]
 
+
 # cache for file -> yaml so we only do the load and check of a yaml
 # file once during a sphinx processing run.
 YAML_CACHE = {}
@@ -331,7 +332,7 @@ class RestParametersDirective(Table):
                     else:
                         continue
 
-        if len(self.env.path_params) is not 0:
+        if len(self.env.path_params) != 0:
             # Warn that path parameters are not set in rest_parameter
             # stanza and will not appear in the generated table.
             for param in self.env.path_params:
