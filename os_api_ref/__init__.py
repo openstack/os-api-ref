@@ -655,9 +655,9 @@ def copy_assets(app, exception):
 
 
 def add_assets(app):
-    app.add_stylesheet('api-site.css')
-    app.add_javascript('api-site.js')
-    app.add_javascript('combobox.js')
+    app.add_css_file('api-site.css')
+    app.add_js_file('api-site.js')
+    app.add_js_file('combobox.js')
 
 
 def setup(app):
