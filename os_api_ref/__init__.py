@@ -229,7 +229,8 @@ class RestParametersDirective(Table):
                         location=(self.env.docname, None))
             return
         except yaml.YAMLError as exc:
-            LOG.exception(exc_info=exc)
+            LOG.exception(exc_info=exc,
+                          msg="Error while parsing file [%s]." % fpath)
             raise
 
         if lookup:
