@@ -20,7 +20,6 @@ from docutils.parsers import rst
 from docutils.parsers.rst.directives.tables import Table
 from docutils.statemachine import ViewList
 import pbr.version
-import six
 from sphinx.util import logging
 from sphinx.util.osutil import copyfile
 import yaml
@@ -392,7 +391,7 @@ class RestParametersDirective(Table):
         groups = []
         trow = nodes.row()
         entry = nodes.entry()
-        para = nodes.paragraph(text=six.u(table_data))
+        para = nodes.paragraph(text=str(table_data))
         entry += para
         trow += entry
         rows.append(trow)

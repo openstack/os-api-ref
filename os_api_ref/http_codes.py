@@ -10,10 +10,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from http.client import responses
+
 from docutils import nodes
 from docutils.parsers.rst.directives.tables import Table
 from docutils.statemachine import ViewList
-from six.moves.http_client import responses
 from sphinx.util import logging
 import yaml
 
