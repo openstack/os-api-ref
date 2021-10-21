@@ -32,10 +32,7 @@ from os_api_ref.tests import base
 # for some reason and this is bound to have some side effects
 #
 # [1] https://github.com/sphinx-doc/sphinx/commit/3a85b3502f
-try:
-    sphinx.application.abspath = lambda x: x
-except ImportError:  # Sphinx < 1.8
-    pass
+sphinx.application.abspath = lambda x: x
 
 
 class TestBasicExample(base.TestCase):
@@ -90,11 +87,7 @@ class TestBasicExample(base.TestCase):
 
     def test_parameters(self):
         """Do we get some parameters table"""
-
-        # TODO(stephenfin): Drop support for this once we drop support for both
-        # Python 2.7 and Sphinx < 2.0, likely in "U"
-        if sphinx.version_info >= (2, 0, 0):
-            table = """<table class="docutils align-{}">
+        table = """<table class="docutils align-default">
 <colgroup>
 <col style="width: 20%"/>
 <col style="width: 10%"/>
@@ -115,40 +108,11 @@ class TestBasicExample(base.TestCase):
 <td><p>The name of things</p></td>
 </tr>
 </tbody>
-</table>""".format('center' if sphinx.version_info < (2, 1, 0)
-                   else 'default')
-        else:
-            table = """<table border="1" class="docutils">
-<colgroup>
-<col width="20%"/>
-<col width="10%"/>
-<col width="10%"/>
-<col width="60%"/>
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Name</th>
-<th class="head">In</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>name</td>
-<td>body</td>
-<td>string</td>
-<td>The name of things</td>
-</tr>
-</tbody>
 </table>"""
-
         self.assertIn(table, self.content)
 
     def test_rest_response(self):
-
-        # TODO(stephenfin): Drop support for this once we drop support for both
-        # Python 2.7 and Sphinx < 2.0, likely in "U"
-        if sphinx.version_info >= (2, 0, 0):
-            success_table = """<table class="docutils align-{}">
+        success_table = """<table class="docutils align-default">
 <colgroup>
 <col style="width: 30%"/>
 <col style="width: 70%"/>
@@ -169,10 +133,9 @@ class TestBasicExample(base.TestCase):
 <td><p>Resource was created and is ready to use.</p></td>
 </tr>
 </tbody>
-</table>""".format('center' if sphinx.version_info < (2, 1, 0)
-                   else 'default')
+</table>"""
 
-            error_table = """<table class="docutils align-{}">
+        error_table = """<table class="docutils align-default">
 <colgroup>
 <col style="width: 30%"/>
 <col style="width: 70%"/>
@@ -202,65 +165,7 @@ class TestBasicExample(base.TestCase):
 <td><p>There is already a zone with this name.</p></td>
 </tr>
 </tbody>
-</table>""".format('center' if sphinx.version_info < (2, 1, 0)
-                   else 'default')
-        else:
-            success_table = """table border="1" class="docutils">
-<colgroup>
-<col width="30%"/>
-<col width="70%"/>
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Code</th>
-<th class="head">Reason</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td><code>200 - OK</code></td>
-<td>Request was successful.</td>
-</tr>
-<tr class="row-odd"><td><code>100 - Continue</code></td>
-<td>An unusual code for an API</td>
-</tr>
-<tr class="row-even"><td><code>201 - Created</code></td>
-<td>Resource was created and is ready to use.</td>
-</tr>
-</tbody>
-</table>
-"""
-
-            error_table = """<table border="1" class="docutils">
-<colgroup>
-<col width="30%"/>
-<col width="70%"/>
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Code</th>
-<th class="head">Reason</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td><code>405 - Method Not Allowed</code></td>
-<td>Method is not valid for this endpoint.</td>
-</tr>
-<tr class="row-odd"><td><code>403 - Forbidden</code></td>
-<td>Policy does not allow current user to do this operation.</td>
-</tr>
-<tr class="row-even"><td><code>401 - Unauthorized</code></td>
-<td>User must authenticate before making a request</td>
-</tr>
-<tr class="row-odd"><td><code>400 - Bad Request</code></td>
-<td>Some content in the request was invalid</td>
-</tr>
-<tr class="row-even"><td><code>500 - Internal Server Error</code></td>
-<td>Something went wrong inside the service.</td>
-</tr>
-<tr class="row-odd"><td><code>409 - Conflict</code></td>
-<td>There is already a zone with this name.</td>
-</tr>
-</tbody>
-</table>
-"""
+</table>"""
 
         self.assertIn(success_table, self.content)
         self.assertIn(error_table, self.content)

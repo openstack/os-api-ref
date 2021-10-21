@@ -18,7 +18,6 @@ Tests for `os_api_ref` module.
 """
 
 from bs4 import BeautifulSoup
-import sphinx
 from sphinx_testing import with_app
 
 from os_api_ref.tests import base
@@ -56,9 +55,8 @@ class TestMicroversions(base.TestCase):
 
     def test_parameters_table(self):
         """Test that min / max mv css class attributes are set in params"""
-        if sphinx.version_info >= (2, 0, 0):
-            table = """<div class="api-detail collapse section" id="list-servers-detail">
-<table class="docutils align-{}">
+        table = """
+<table class="docutils align-default">
 <colgroup>
 <col style="width: 20%"/>
 <col style="width: 10%"/>
@@ -94,49 +92,7 @@ class TestMicroversions(base.TestCase):
 </tr>
 </tbody>
 </table>
-</div>
-""".format('center' if sphinx.version_info < (2, 1, 0) else 'default')  # noqa
-        else:
-            table = """<div class="api-detail collapse section" id="list-servers-detail">
-<table border="1" class="docutils">
-<colgroup>
-<col width="20%"/>
-<col width="10%"/>
-<col width="10%"/>
-<col width="60%"/>
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Name</th>
-<th class="head">In</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>name</td>
-<td>body</td>
-<td>string</td>
-<td>The name of things</td>
-</tr>
-<tr class="rp_min_ver_2_11 row-odd"><td>name2</td>
-<td>body</td>
-<td>string</td>
-<td><p class="first">The name of things</p>
-<p class="last"><strong>New in version 2.11</strong></p>
-</td>
-</tr>
-<tr class="rp_max_ver_2_20 row-even"><td>name3</td>
-<td>body</td>
-<td>string</td>
-<td><p class="first">The name of things</p>
-<p class="last"><strong>Available until version 2.20</strong></p>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-"""  # noqa
-
+"""
         self.assertIn(table, self.content)
 
     def test_mv_selector(self):
