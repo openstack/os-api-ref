@@ -18,7 +18,6 @@ Tests for `os_api_ref` module.
 """
 
 from bs4 import BeautifulSoup
-from sphinx_testing import with_app
 
 from os_api_ref.tests import base
 
@@ -30,8 +29,8 @@ class TestMicroversions(base.TestCase):
     examples, so if someone breaks something we know.
     """
 
-    @with_app(buildername='html', srcdir=base.example_dir('microversions'),
-              copy_srcdir_to_tmpdir=True)
+    @base.with_app(buildername='html',
+                   srcdir=base.example_dir('microversions'))
     def setUp(self, app, status, warning):
         super(TestMicroversions, self).setUp()
         self.app = app

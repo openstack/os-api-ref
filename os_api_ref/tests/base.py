@@ -16,7 +16,11 @@
 import os
 
 import fixtures
+import tempfile
 import testtools
+
+from sphinx.testing.path import path
+from sphinx.testing.util import SphinxTestApp
 
 
 def example_dir(name=""):
@@ -24,6 +28,29 @@ def example_dir(name=""):
 
 
 _TRUE_VALUES = ('True', 'true', '1', 'yes')
+
+
+class with_app:
+    def __init__(self, **kwargs):
+        if 'srcdir' in kwargs:
+            self.srcdir = path(kwargs['srcdir'])
+        self.sphinx_app_args = kwargs
+
+    def __call__(self, f):
+        def newf(*args, **kwargs):
+            with tempfile.TemporaryDirectory() as tmpdirname:
+                tmpdir = path(tmpdirname)
+                tmproot = tmpdir / self.srcdir.basename()
+                self.srcdir.copytree(tmproot)
+                self.sphinx_app_args['srcdir'] = tmproot
+                self.builddir = tmproot.joinpath('_build')
+
+                app = SphinxTestApp(freshenv=True, **self.sphinx_app_args)
+
+                f(*args, app, app._status, app._warning, **kwargs)
+
+                app.cleanup()
+        return newf
 
 
 class OutputStreamCapture(fixtures.Fixture):
