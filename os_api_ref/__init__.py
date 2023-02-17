@@ -642,6 +642,9 @@ def copy_assets(app, exception):
     builders = ('html', 'readthedocs', 'readthedocssinglehtmllocalmedia')
     if app.builder.name not in builders or exception:
         return
+    dirtree = os.path.join(app.builder.outdir, '_static/fonts')
+    if not os.path.exists(dirtree):
+        os.makedirs(dirtree)
     LOG.info('Copying assets: %s', ', '.join(assets))
     LOG.info('Copying fonts: %s', ', '.join(fonts))
     for asset in assets:
