@@ -14,12 +14,13 @@
 # under the License.
 
 import os
+import pathlib
+import shutil
 
 import fixtures
 import tempfile
 import testtools
 
-from sphinx.testing.path import path
 from sphinx.testing.util import SphinxTestApp
 
 
@@ -32,16 +33,15 @@ _TRUE_VALUES = ('True', 'true', '1', 'yes')
 
 class with_app:
     def __init__(self, **kwargs):
-        if 'srcdir' in kwargs:
-            self.srcdir = path(kwargs['srcdir'])
+        self.srcdir = pathlib.Path(kwargs['srcdir'])
         self.sphinx_app_args = kwargs
 
     def __call__(self, f):
         def newf(*args, **kwargs):
             with tempfile.TemporaryDirectory() as tmpdirname:
-                tmpdir = path(tmpdirname)
-                tmproot = tmpdir / self.srcdir.basename()
-                self.srcdir.copytree(tmproot)
+                tmpdir = pathlib.Path(tmpdirname)
+                tmproot = tmpdir.joinpath(self.srcdir.name)
+                shutil.copytree(self.srcdir, tmproot)
                 self.sphinx_app_args['srcdir'] = tmproot
                 self.builddir = tmproot.joinpath('_build')
 

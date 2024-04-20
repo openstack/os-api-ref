@@ -44,11 +44,11 @@ class TestMicroversions(base.TestCase):
     def test_rest_method(self):
         """Test that min / max mv css class attributes are set"""
         content = self.soup.find_all(class_='rp_min_ver_2_17')
-        self.assertRegexpMatches(
+        self.assertRegex(
             str(content[0]),
             '^<div class="operation-grp rp_min_ver_2_17 rp_max_ver_2_19 ?"')
         content = self.soup.find_all(class_='rp_max_ver_2_19')
-        self.assertRegexpMatches(
+        self.assertRegex(
             str(content[0]),
             '^<div class="operation-grp rp_min_ver_2_17 rp_max_ver_2_19 ?"')
 
@@ -56,12 +56,6 @@ class TestMicroversions(base.TestCase):
         """Test that min / max mv css class attributes are set in params"""
         table = """
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 20%"/>
-<col style="width: 10%"/>
-<col style="width: 10%"/>
-<col style="width: 60%"/>
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
 <th class="head"><p>In</p></th>

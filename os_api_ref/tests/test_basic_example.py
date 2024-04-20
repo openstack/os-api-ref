@@ -74,12 +74,6 @@ class TestBasicExample(base.TestCase):
     def test_parameters(self):
         """Do we get some parameters table"""
         table = """<table class="docutils align-default">
-<colgroup>
-<col style="width: 20%"/>
-<col style="width: 10%"/>
-<col style="width: 10%"/>
-<col style="width: 60%"/>
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
 <th class="head"><p>In</p></th>
@@ -99,10 +93,6 @@ class TestBasicExample(base.TestCase):
 
     def test_rest_response(self):
         success_table = """<table class="docutils align-default">
-<colgroup>
-<col style="width: 30%"/>
-<col style="width: 70%"/>
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Code</p></th>
 <th class="head"><p>Reason</p></th>
@@ -122,10 +112,6 @@ class TestBasicExample(base.TestCase):
 </table>"""
 
         error_table = """<table class="docutils align-default">
-<colgroup>
-<col style="width: 30%"/>
-<col style="width: 70%"/>
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Code</p></th>
 <th class="head"><p>Reason</p></th>

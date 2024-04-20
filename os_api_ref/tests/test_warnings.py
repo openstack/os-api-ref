@@ -17,6 +17,8 @@ test_os_api_ref
 Tests for `os_api_ref` module.
 """
 
+from collections import OrderedDict
+
 from bs4 import BeautifulSoup
 
 from os_api_ref.tests import base
@@ -55,11 +57,16 @@ class TestWarnings(base.TestCase):
 
     def test_missing_field(self):
         """Warning when missing type field in parameter file."""
+        # py312 changes string interpretation of OrderedDict.
+        # Prevent such failures by using OrderedDict directly
+        cmp_data = OrderedDict({
+            "description": "name_1 is missing type field.\n",
+            "in": "body",
+            "required": True
+        })
         self.assertIn(
             ("WARNING: Failure on key: name, values: " +
-             "OrderedDict([('description'," +
-             " 'name_1 is missing type field.\\n'), ('in', 'body')," +
-             " ('required', True)]). " +
+             f"{cmp_data}. " +
              "'NoneType' object has no attribute 'split'"),
             self.warning)
 
