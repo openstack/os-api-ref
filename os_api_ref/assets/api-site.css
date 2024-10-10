@@ -12,7 +12,7 @@ larger, we need them smaller */
 blockquote { font-size: 1em; }
 
 .docs-book-wrapper {
-  width: 90% !important
+  max-width: 90% !important
 }
 
 tbody>tr:nth-child(odd)>td,
@@ -58,6 +58,10 @@ a.operation-anchor {
     font-weight: bold;
 }
 
+span.badge {
+  /* backwards compatibility to BS3 */
+  border-radius: 0.25em;
+}
 .label-POST {
   background-color: #5cb85c;
 }
@@ -98,6 +102,10 @@ a.operation-anchor {
 .label-DELETE[href]:hover,
 .label-DELETE[href]:focus {
   background-color: #c9302c;
+}
+
+button.btn-info {
+  color: white;
 }
 
 .btn-detail:hover, .btn-detail:focus,
