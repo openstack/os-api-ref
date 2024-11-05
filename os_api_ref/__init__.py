@@ -693,4 +693,8 @@ def setup(app):
     # _static directory during final build.
     app.connect('build-finished', copy_assets)
 
-    return {'version': __version__}
+    return {
+        'parallel_read_safe': True,
+        'parallel_write_safe': True,
+        'version': __version__,
+    }
