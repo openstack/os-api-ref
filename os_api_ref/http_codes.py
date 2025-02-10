@@ -41,7 +41,7 @@ class HTTPResponseCodeDirective(Table):
 
     def __init__(self, *args, **kwargs):
         self.CODES.update(responses)
-        super(HTTPResponseCodeDirective, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def _load_status_file(self, fpath):
         global HTTP_YAML_CACHE
@@ -50,9 +50,9 @@ class HTTPResponseCodeDirective(Table):
 
         # LOG.info("Fpath: %s" % fpath)
         try:
-            with open(fpath, 'r') as stream:
+            with open(fpath) as stream:
                 lookup = yaml.safe_load(stream)
-        except IOError:
+        except OSError:
             LOG.warning(
                 "Parameters file %s not found" % fpath,
                 (self.env.docname, None))
@@ -92,7 +92,8 @@ class HTTPResponseCodeDirective(Table):
 
         if status_type not in self.status_types:
             error = self.state_machine.reporter.error(
-                'Type %s is not one of %s' % (status_type, self.status_types),
+                'Type {} is not one of {}'.format(
+                    status_type, self.status_types),
                 nodes.literal_block(self.block_text, self.block_text),
                 line=self.lineno)
             return [error]
@@ -142,7 +143,7 @@ class HTTPResponseCodeDirective(Table):
                         )
                 except KeyError:
                     LOG.warning(
-                        "Could not find %s for code %s" % (reason, code))
+                        "Could not find {} for code {}".format(reason, code))
                     new_content.append(
                         (code, self.status_defs[code]['default']))
 

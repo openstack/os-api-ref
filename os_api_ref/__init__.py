@@ -86,7 +86,7 @@ def ordered_load(
     # numbers) as strings. So that microversion specification of 2.20
     # and 2.2 don't get confused.
     OrderedLoader.add_constructor(
-        u'tag:yaml.org,2002:float',
+        'tag:yaml.org,2002:float',
         yaml.constructor.SafeConstructor.construct_yaml_str)
 
     return yaml.load(stream, OrderedLoader)
@@ -198,7 +198,7 @@ class RestMethodDirective(rst.Directive):
         # they are still unlikely to occurr and it is way shorter
         # than stronger SHAs.
         node_hash = hashlib.sha1(str(node).encode('utf-8')).hexdigest()
-        temp_target = "%s-%s-selector" % (node['target'], node_hash)
+        temp_target = "{}-{}-selector".format(node['target'], node_hash)
         target = nodes.target(ids=[temp_target])
         self.state.add_target(temp_target, '', target, lineno)
         section += node
@@ -222,9 +222,9 @@ class RestParametersDirective(Table):
 
         lookup = {}
         try:
-            with open(fpath, 'r') as stream:
+            with open(fpath) as stream:
                 lookup = ordered_load(stream)
-        except IOError:
+        except OSError:
             LOG.warning("Parameters file not found, %s", fpath,
                         location=(self.env.docname, None))
             return
@@ -595,10 +595,10 @@ Microversions
 def build_mv_item(major, micro, releases):
     version = "%d.%d" % (major, micro)
     if version in releases:
-        return '<option value="%s">%s - %s</option>' % (
+        return '<option value="{}">{} - {}</option>'.format(
             version, version, releases[version].capitalize())
     else:
-        return '<option value="%s">%s</option>' % (version, version)
+        return '<option value="{}">{}</option>'.format(version, version)
 
 
 def resolve_rest_references(app, doctree):
