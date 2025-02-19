@@ -487,30 +487,32 @@ class RestParametersDirective(Table):
 
 def rest_method_html(self, node):
     tmpl = """
-<div class="operation-grp %(css_classes)s">
+<div class="operation-grp %(css_classes)s container">
 <div class="row">
     <div class="col-md-2">
     <div class="operation">
     <a name="%(target)s" class="operation-anchor" href="#%(target)s"
       onclick="window.location.hash = hash;"
       >
-      <span class="glyphicon glyphicon-link"></span></a>
-    <span class="label label-%(method)s">%(method)s</span>
+      <span class="fa fa-link"></span></a>
+    <span class="badge label-%(method)s">%(method)s</span>
     </div>
     </div>
     <div class="col-md-9">
     <div class="row">
         <div class="endpoint-container">
-        <div class="row col-md-12">%(url)s</div>
-        <div class="row col-md-12"><p class="url-subtitle">%(desc)s</p></div>
+          <div class="endpoint-url">%(url)s</div>
+          <div class="endpoint-title">
+            <p class="url-subtitle">%(desc)s</p>
+          </div>
         </div>
     </div>
     </div>
     <div class="col-md-1">
     <button
        class="btn btn-info btn-sm btn-detail"
-       data-target="#%(target)s-detail"
-       data-toggle="collapse"
+       data-bs-target="#%(target)s-detail"
+       data-bs-toggle="collapse"
        id="%(target)s-detail-btn"
        >detail</button>
     </div>
@@ -532,7 +534,7 @@ def rest_expand_all_html(self, node):
     tmpl = """
 <div class="row">
 %(extra_js)s
-<div class="col-md-2 col-md-offset-9">
+<div class="col-md-2 col-md-offset-9 ms-auto">
 %(selector)s
 </div>
 <div class=col-md-1>
@@ -634,7 +636,7 @@ def resolve_rest_references(app, doctree):
 
 
 def copy_assets(app, exception):
-    assets = ('api-site.css', 'api-site.js', 'combobox.js')
+    assets = ('api-site.css', 'api-site.js')
     fonts = (
         'glyphicons-halflings-regular.ttf',
         'glyphicons-halflings-regular.woff'
@@ -660,7 +662,6 @@ def copy_assets(app, exception):
 def add_assets(app):
     app.add_css_file('api-site.css')
     app.add_js_file('api-site.js')
-    app.add_js_file('combobox.js')
 
 
 def setup(app):

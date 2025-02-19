@@ -57,17 +57,17 @@ class TestBasicExample(base.TestCase):
         # whole template instead of parts.
         content = str(self.soup.find_all(class_='operation-grp'))
         self.assertIn(
-            '<span class="glyphicon glyphicon-link"></span>',
+            '<span class="fa fa-link"></span>',
             str(content))
         self.assertIn(
-            '<span class="label label-GET">GET</span>',
+            '<span class="badge label-GET">GET</span>',
             str(content))
         self.assertIn(
-            '<div class="row col-md-12">/servers</div>',
+            '<div class="endpoint-url">/servers</div>',
             str(content))
         self.assertIn(
             ('<button class="btn btn-info btn-sm btn-detail" '
-             'data-target="#list-servers-detail" data-toggle="collapse" '
+             'data-bs-target="#list-servers-detail" data-bs-toggle="collapse" '
              'id="list-servers-detail-btn">detail</button>'),
             str(content))
 

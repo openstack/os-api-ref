@@ -1,4 +1,4 @@
-(function() {
+window.onload = function() {
     // the list of expanded element ids
     var expanded = [];
     // whether we should sync expand changes with the location
@@ -161,18 +161,4 @@
         $('[class^=rp_max_ver]').show(400);
     }
 
-
-    $(document).ready(function(){
-        $('#mv_select').combobox({appendId: '-visable'});
-        $('#mv_select').on('change', function() {
-            var version = this.value;
-            if (version == "") {
-                reset_microversion();
-            } else {
-                set_microversion(version);
-            }
-        });
-    });
-
-
-})();
+};
