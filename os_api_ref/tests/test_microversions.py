@@ -32,7 +32,7 @@ class TestMicroversions(base.TestCase):
     @base.with_app(buildername='html',
                    srcdir=base.example_dir('microversions'))
     def setUp(self, app, status, warning):
-        super(TestMicroversions, self).setUp()
+        super().setUp()
         self.app = app
         self.app.build()
         self.status = status.getvalue()

@@ -31,7 +31,7 @@ class TestBasicExample(base.TestCase):
 
     @base.with_app(buildername='html', srcdir=base.example_dir('basic'))
     def setUp(self, app, status, warning):
-        super(TestBasicExample, self).setUp()
+        super().setUp()
         self.app = app
         self.status = status
         self.warning = warning

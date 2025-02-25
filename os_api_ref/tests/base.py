@@ -62,7 +62,7 @@ class OutputStreamCapture(fixtures.Fixture):
     tests.
     """
     def setUp(self):
-        super(OutputStreamCapture, self).setUp()
+        super().setUp()
         if os.environ.get('OS_STDOUT_CAPTURE') in _TRUE_VALUES:
             self.out = self.useFixture(fixtures.StringStream('stdout'))
             self.useFixture(
@@ -93,7 +93,7 @@ class Timeout(fixtures.Fixture):
     """
 
     def __init__(self, timeout, scaling=1):
-        super(Timeout, self).__init__()
+        super().__init__()
         try:
             self.test_timeout = int(timeout)
         except ValueError:
@@ -105,7 +105,7 @@ class Timeout(fixtures.Fixture):
             raise ValueError('scaling value must be >= 1')
 
     def setUp(self):
-        super(Timeout, self).setUp()
+        super().setUp()
         if self.test_timeout > 0:
             self.useFixture(fixtures.Timeout(self.test_timeout, gentle=True))
 
@@ -116,7 +116,7 @@ class TestCase(testtools.TestCase):
 
     def setUp(self):
         """Run before each test method to initialize test environment."""
-        super(TestCase, self).setUp()
+        super().setUp()
         self.useFixture(Timeout(
             os.environ.get('OS_TEST_TIMEOUT', 0)))
         self.useFixture(OutputStreamCapture())
