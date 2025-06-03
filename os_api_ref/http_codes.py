@@ -221,6 +221,10 @@ def http_code_html(self, node):
     raise nodes.SkipNode
 
 
+def http_code_text(self, node):
+    raise nodes.SkipNode
+
+
 class http_code(nodes.Part, nodes.Element):
     """Node for http_code stanza
 

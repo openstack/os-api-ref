@@ -26,6 +26,7 @@ import yaml
 
 from os_api_ref.http_codes import http_code
 from os_api_ref.http_codes import http_code_html
+from os_api_ref.http_codes import http_code_text
 from os_api_ref.http_codes import HTTPResponseCodeDirective
 
 __version__ = pbr.version.VersionInfo(
@@ -555,6 +556,14 @@ def rest_expand_all_html(self, node):
     raise nodes.SkipNode
 
 
+def rest_method_text(self, node):
+    raise nodes.SkipNode
+
+
+def rest_expand_all_text(self, node):
+    raise nodes.SkipNode
+
+
 def create_mv_selector(node):
 
     mv_list = '<option value="" selected="selected">All</option>'
@@ -672,9 +681,12 @@ def setup(app):
     # TODO(sdague): if someone wants to support latex/pdf, or man page
     # generation using these stanzas, here is where you'd need to
     # specify content specific renderers.
-    app.add_node(rest_method, html=(rest_method_html, None))
-    app.add_node(rest_expand_all, html=(rest_expand_all_html, None))
-    app.add_node(http_code, html=(http_code_html, None))
+    app.add_node(rest_method, html=(rest_method_html, None),
+                 text=(rest_method_text, None))
+    app.add_node(rest_expand_all, html=(rest_expand_all_html, None),
+                 text=(rest_expand_all_text, None))
+    app.add_node(http_code, html=(http_code_html, None),
+                 text=(http_code_text, None))
 
     # This specifies all our directives that we're adding
     app.add_directive('rest_parameters', RestParametersDirective)
