@@ -1,14 +1,10 @@
-========================
-Team and repository tags
-========================
-
-.. image:: https://governance.openstack.org/tc/badges/os-api-ref.svg
-    :target: https://governance.openstack.org/tc/reference/tags/index.html
-
-.. Change things from this point on
-
+==========
 os-api-ref
 ==========
+
+.. image:: https://governance.openstack.org/tc/badges/os-api-ref.svg
+
+.. Change things from this point on
 
 Sphinx Extensions to support API reference sites in OpenStack
 
