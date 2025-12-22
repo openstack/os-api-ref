@@ -675,7 +675,7 @@ def build_mv_item(major: int, micro: int, releases: dict[str, str]) -> str:
 
 
 def resolve_rest_references(app: Sphinx, doctree: nodes.document) -> None:
-    for node in doctree.traverse():
+    for node in list(doctree.findall()):
         if isinstance(node, rest_method):
             rest_node = node
             rest_method_section = node.parent
