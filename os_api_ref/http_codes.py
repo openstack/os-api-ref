@@ -11,18 +11,22 @@
 # under the License.
 
 from http.client import responses
+from typing import Any
 
 from docutils import nodes
 from docutils.parsers.rst.directives.tables import Table
-from docutils.statemachine import ViewList
+from docutils.parsers.rst.states import Body
+from docutils.statemachine import StringList
 from sphinx.util import logging
+from sphinx.writers.html5 import HTML5Translator
+from sphinx.writers.text import TextTranslator
 import yaml
 
 LOG = logging.getLogger(__name__)
 
 # cache for file -> yaml so we only do the load and check of a yaml
 # file once during a sphinx processing run.
-HTTP_YAML_CACHE = {}
+HTTP_YAML_CACHE: dict[str, dict[int, dict[str, str]]] = {}
 
 
 class HTTPResponseCodeDirective(Table):
@@ -32,17 +36,23 @@ class HTTPResponseCodeDirective(Table):
 
     # This is for HTTP response codes that OpenStack may use that are not part
     # the httplib response dict.
-    CODES = {
+    CODES: dict[int, str] = {
         429: "Too Many Requests",
     }
 
     required_arguments = 2
+    yaml: list[tuple[int, str]]
+    status_defs: dict[int, dict[str, str]] | None
+    col_widths: list[int]
+    max_cols: int
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.CODES.update(responses)
         super().__init__(*args, **kwargs)
 
-    def _load_status_file(self, fpath):
+    def _load_status_file(
+        self, fpath: str
+    ) -> dict[int, dict[str, str]] | None:
         global HTTP_YAML_CACHE
         if fpath in HTTP_YAML_CACHE:
             return HTTP_YAML_CACHE[fpath]
@@ -50,10 +60,10 @@ class HTTPResponseCodeDirective(Table):
         # LOG.info("Fpath: %s" % fpath)
         try:
             with open(fpath) as stream:
-                lookup = yaml.safe_load(stream)
+                lookup: dict[int, dict[str, str]] = yaml.safe_load(stream)
         except OSError:
             LOG.warning("Parameters file %s not found", fpath)
-            return
+            return None
         except yaml.YAMLError as exc:
             LOG.warning(exc)
             raise
@@ -61,7 +71,7 @@ class HTTPResponseCodeDirective(Table):
         HTTP_YAML_CACHE[fpath] = lookup
         return lookup
 
-    def run(self):
+    def run(self) -> list[nodes.Node]:
         self.env = self.state.document.settings.env
 
         # Make sure we have some content, which should be yaml that
@@ -104,14 +114,16 @@ class HTTPResponseCodeDirective(Table):
         # widths (or basically make the colwidth thing go away
         # entirely)
         self.options['widths'] = [30, 70]
-        self.col_widths = self.get_column_widths(self.max_cols)
-        if isinstance(self.col_widths, tuple):
+        col_widths = self.get_column_widths(self.max_cols)  # type: ignore[no-untyped-call]
+        if isinstance(col_widths, tuple):
             # In docutils 0.13.1, get_column_widths returns a (widths,
             # colwidths) tuple, where widths is a string (i.e. 'auto').
             # See https://sourceforge.net/p/docutils/patches/120/.
-            self.col_widths = self.col_widths[1]
+            self.col_widths = col_widths[1]
+        else:
+            self.col_widths = col_widths
         # Actually convert the yaml
-        title, messages = self.make_title()
+        title, messages = self.make_title()  # type: ignore[no-untyped-call]
         # LOG.info("Title %s, messages %s" % (title, messages))
         table_node = self.build_table()
         self.add_name(table_node)
@@ -122,13 +134,18 @@ class HTTPResponseCodeDirective(Table):
         section += title_block
         section += table_node
 
-        return [section] + messages
+        result: list[nodes.Node] = [section]
+        result.extend(messages)
+        return result
 
-    def _load_codes(self):
+    def _load_codes(self) -> list[tuple[int, str]]:
         content = "\n".join(self.content)
         parsed = yaml.safe_load(content)
 
-        new_content = list()
+        new_content: list[tuple[int, str]] = list()
+
+        if self.status_defs is None:
+            return new_content
 
         for item in parsed:
             if isinstance(item, int):
@@ -150,7 +167,7 @@ class HTTPResponseCodeDirective(Table):
 
         return new_content
 
-    def build_table(self):
+    def build_table(self) -> nodes.table:
         table = nodes.table()
         tgroup = nodes.tgroup(cols=len(self.headers))
         table += tgroup
@@ -182,20 +199,21 @@ class HTTPResponseCodeDirective(Table):
 
         return table
 
-    def add_col(self, node):
+    def add_col(self, node: nodes.Node) -> nodes.entry:
         entry = nodes.entry()
         entry.append(node)
         return entry
 
-    def add_desc_col(self, value):
+    def add_desc_col(self, value: str) -> nodes.entry:
         entry = nodes.entry()
-        result = ViewList(value.split('\n'))
+        result = StringList(value.split('\n'))
+        assert isinstance(self.state, Body)
         self.state.nested_parse(result, 0, entry)
         return entry
 
-    def collect_rows(self):
-        rows = []
-        groups = []
+    def collect_rows(self) -> tuple[list[nodes.row], list[nodes.tgroup]]:
+        rows: list[nodes.row] = []
+        groups: list[nodes.tgroup] = []
         try:
             # LOG.info("Parsed content is: %s" % self.yaml)
             for code, desc in self.yaml:
@@ -212,13 +230,13 @@ class HTTPResponseCodeDirective(Table):
         return rows, groups
 
 
-def http_code_html(self, node):
+def http_code_html(self: HTML5Translator, node: "http_code") -> None:
     tmpl = "<code>%(code)s - %(title)s</code>"
     self.body.append(tmpl % node)
     raise nodes.SkipNode
 
 
-def http_code_text(self, node):
+def http_code_text(self: TextTranslator, node: "http_code") -> None:
     raise nodes.SkipNode
 
 

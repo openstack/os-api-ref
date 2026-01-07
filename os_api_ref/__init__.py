@@ -10,18 +10,24 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from collections.abc import Iterable
 from collections import OrderedDict
 import hashlib
 import os
 import re
+from typing import Any
 
 from docutils import nodes
 from docutils.parsers import rst
 from docutils.parsers.rst.directives.tables import Table
-from docutils.statemachine import ViewList
+from docutils.parsers.rst.states import Body
+from docutils.statemachine import StringList
 import pbr.version
+from sphinx.application import Sphinx
 from sphinx.util import logging
 from sphinx.util.osutil import copyfile
+from sphinx.writers.html5 import HTML5Translator
+from sphinx.writers.text import TextTranslator
 import yaml
 
 from os_api_ref.http_codes import http_code
@@ -65,21 +71,22 @@ in both naming and ordering of parameters at every declaration.
 """
 
 
-def ordered_load(
-    stream, Loader=yaml.SafeLoader, object_pairs_hook=OrderedDict
-):
+def ordered_load(stream: Any) -> OrderedDict[str, Any]:
     """Load yaml as an ordered dict
 
     This allows us to inspect the order of the file on disk to make
     sure it was correct by our rules.
     """
 
-    class OrderedLoader(Loader):
+    class OrderedLoader(yaml.SafeLoader):
         pass
 
-    def construct_mapping(loader, node):
+    def construct_mapping(
+        loader: OrderedLoader, node: yaml.MappingNode
+    ) -> OrderedDict[str, Any]:
         loader.flatten_mapping(node)
-        return object_pairs_hook(loader.construct_pairs(node))
+        pairs = loader.construct_pairs(node)  # type: ignore[no-untyped-call]
+        return OrderedDict(pairs)
 
     OrderedLoader.add_constructor(
         yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, construct_mapping
@@ -87,12 +94,13 @@ def ordered_load(
     # for parameters.yaml we treat numbers (especially version
     # numbers) as strings. So that microversion specification of 2.20
     # and 2.2 don't get confused.
-    OrderedLoader.add_constructor(
+    OrderedLoader.add_constructor(  # type: ignore[type-var]
         'tag:yaml.org,2002:float',
         yaml.constructor.SafeConstructor.construct_yaml_str,
     )
 
-    return yaml.load(stream, OrderedLoader)
+    result: OrderedDict[str, Any] = yaml.load(stream, OrderedLoader)
+    return result
 
 
 class rest_method(nodes.Part, nodes.Element):
@@ -133,7 +141,7 @@ class RestExpandAllDirective(rst.Directive):
     # content during the final build phase.
     has_content = True
 
-    def run(self):
+    def run(self) -> list[nodes.Node]:
         app = self.state.document.settings.env.app
         node = rest_expand_all()
         max_ver = app.config.os_api_ref_max_microversion
@@ -159,16 +167,15 @@ class RestMethodDirective(rst.Directive):
     has_content = True
 
     @staticmethod
-    def find_param(content, name):
+    def find_param(content: Iterable[str], name: str) -> str | None:
         for line in content:
             if f"{name}: " in line:
                 _, value = line.split(': ')
                 return value.rstrip().lstrip()
         return None
 
-    def run(self):
+    def run(self) -> list[nodes.Node]:
         lineno = self.state_machine.abs_line_number()
-        target = nodes.target()
         section = nodes.section(classes=["detail-control"])
 
         node = rest_method()
@@ -206,6 +213,7 @@ class RestMethodDirective(rst.Directive):
         node_hash = hashlib.sha1(str(node).encode('utf-8')).hexdigest()
         temp_target = "{}-{}-selector".format(node['target'], node_hash)
         target = nodes.target(ids=[temp_target])
+        assert isinstance(self.state, Body)
         self.state.add_target(temp_target, '', target, lineno)
         section += node
 
@@ -214,18 +222,22 @@ class RestMethodDirective(rst.Directive):
 
 # cache for file -> yaml so we only do the load and check of a yaml
 # file once during a sphinx processing run.
-YAML_CACHE = {}
+YAML_CACHE: dict[str, OrderedDict[str, Any]] = {}
 
 
 class RestParametersDirective(Table):
     headers = ["Name", "In", "Type", "Description"]
+    yaml: list[tuple[str, dict[str, Any]]]
+    yaml_file: str
+    col_widths: list[int]
+    max_cols: int
 
-    def _load_param_file(self, fpath):
+    def _load_param_file(self, fpath: str) -> OrderedDict[str, Any] | None:
         global YAML_CACHE
         if fpath in YAML_CACHE:
             return YAML_CACHE[fpath]
 
-        lookup = {}
+        lookup: OrderedDict[str, Any] | None = None
         try:
             with open(fpath) as stream:
                 lookup = ordered_load(stream)
@@ -235,7 +247,7 @@ class RestParametersDirective(Table):
                 fpath,
                 location=(self.env.docname, None),
             )
-            return
+            return None
         except yaml.YAMLError:
             LOG.exception(
                 "Error while parsing file [%s].",
@@ -252,12 +264,14 @@ class RestParametersDirective(Table):
                 fpath,
                 location=(self.env.docname, None),
             )
-            return
+            return None
 
         YAML_CACHE[fpath] = lookup
         return lookup
 
-    def _check_yaml_sorting(self, fpath, yaml_data):
+    def _check_yaml_sorting(
+        self, fpath: str, yaml_data: OrderedDict[str, Any]
+    ) -> None:
         """check yaml sorting
 
         Assuming we got an ordered dict, we iterate through it
@@ -316,7 +330,7 @@ class RestParametersDirective(Table):
                 )
             last = (key, value)
 
-    def yaml_from_file(self, fpath):
+    def yaml_from_file(self, fpath: str) -> None:
         """Collect Parameter stanzas from inline + file.
 
         This allows use to reference an external file for the actual
@@ -329,12 +343,13 @@ class RestParametersDirective(Table):
 
         content = "\n".join(self.content)
         parsed = yaml.safe_load(content)
-        new_content = list()
+        new_content: list[tuple[str, dict[str, Any]]] = list()
+        node = self.state_machine.node
         for paramlist in parsed:
             if not isinstance(paramlist, dict):
-                location = (
-                    self.state_machine.node.source,
-                    self.state_machine.node.line,
+                location: tuple[str | None, int | None] = (
+                    node.source if node else None,
+                    node.line if node else None,
                 )
                 LOG.warning(
                     "Invalid parameter definition ``%s``. Expected "
@@ -353,8 +368,8 @@ class RestParametersDirective(Table):
                     # track down where the parameters list is that is
                     # wrong. So it's good enough for now.
                     location = (
-                        self.state_machine.node.source,
-                        self.state_machine.node.line,
+                        node.source if node else None,
+                        node.line if node else None,
                     )
                     LOG.warning(
                         "No field definition for ``%s`` found in "
@@ -376,8 +391,8 @@ class RestParametersDirective(Table):
             # stanza and will not appear in the generated table.
             for param in self.env.path_params:
                 location = (
-                    self.state_machine.node.source,
-                    self.state_machine.node.line,
+                    node.source if node else None,
+                    node.line if node else None,
                 )
                 LOG.warning(
                     "No path parameter ``%s`` found in rest_parameter"
@@ -387,7 +402,7 @@ class RestParametersDirective(Table):
 
         self.yaml = new_content
 
-    def run(self):
+    def run(self) -> list[nodes.Node]:
         self.env = self.state.document.settings.env
 
         # Make sure we have some content, which should be yaml that
@@ -419,23 +434,29 @@ class RestParametersDirective(Table):
         # widths (or basically make the colwidth thing go away
         # entirely)
         self.options['widths'] = [20, 10, 10, 60]
-        self.col_widths = self.get_column_widths(self.max_cols)
-        if isinstance(self.col_widths, tuple):
+        col_widths = self.get_column_widths(self.max_cols)  # type: ignore[no-untyped-call]
+        if isinstance(col_widths, tuple):
             # In docutils 0.13.1, get_column_widths returns a (widths,
             # colwidths) tuple, where widths is a string (i.e. 'auto').
             # See https://sourceforge.net/p/docutils/patches/120/.
-            self.col_widths = self.col_widths[1]
+            self.col_widths = col_widths[1]
+        else:
+            self.col_widths = col_widths
         # Actually convert the yaml
-        title, messages = self.make_title()
+        title, messages = self.make_title()  # type: ignore[no-untyped-call]
         table_node = self.build_table()
         self.add_name(table_node)
         if title:
             table_node.insert(0, title)
-        return [table_node] + messages
+        result: list[nodes.Node] = [table_node]
+        result.extend(messages)
+        return result
 
-    def get_rows(self, table_data):
-        rows = []
-        groups = []
+    def get_rows(
+        self, table_data: Any
+    ) -> tuple[list[nodes.row], list[nodes.tgroup]]:
+        rows: list[nodes.row] = []
+        groups: list[nodes.tgroup] = []
         trow = nodes.row()
         entry = nodes.entry()
         para = nodes.paragraph(text=str(table_data))
@@ -444,18 +465,17 @@ class RestParametersDirective(Table):
         rows.append(trow)
         return rows, groups
 
-        # Add a column for a field. In order to have the RST inside
-
+    # Add a column for a field. In order to have the RST inside
     # these fields get rendered, we need to use the
-    # ViewList. Note, ViewList expects a list of lines, so chunk
+    # StringList. Note, StringList expects a list of lines, so chunk
     # up our content as a list to make it happy.
-    def add_col(self, value):
+    def add_col(self, value: str) -> nodes.entry:
         entry = nodes.entry()
-        result = ViewList(value.split('\n'))
+        result = StringList(value.split('\n'))
         self.state.nested_parse(result, 0, entry)
         return entry
 
-    def show_no_yaml_error(self):
+    def show_no_yaml_error(self) -> nodes.row:
         trow = nodes.row(classes=["no_yaml"])
         trow += self.add_col(f"No yaml found {self.yaml_file}")
         trow += self.add_col("")
@@ -463,9 +483,9 @@ class RestParametersDirective(Table):
         trow += self.add_col("")
         return trow
 
-    def collect_rows(self):
-        rows = []
-        groups = []
+    def collect_rows(self) -> tuple[list[nodes.row], list[nodes.tgroup]]:
+        rows: list[nodes.row] = []
+        groups: list[nodes.tgroup] = []
         try:
             for key, values in self.yaml:
                 min_version = values.get('min_version', '')
@@ -489,8 +509,12 @@ class RestParametersDirective(Table):
                 if values.get('required', False) is False:
                     name += " (Optional)"
                 trow += self.add_col(name)
-                trow += self.add_col(values.get('in'))
-                trow += self.add_col(values.get('type'))
+                # The following .get() calls can return None, which will
+                # trigger an AttributeError in add_col() when calling
+                # value.split(). This error is caught below and logged
+                # as a warning, which is the desired behavior.
+                trow += self.add_col(values.get('in'))  # type: ignore[arg-type]
+                trow += self.add_col(values.get('type'))  # type: ignore[arg-type]
                 trow += self.add_col(desc)
                 rows.append(trow)
         except AttributeError as exc:
@@ -502,7 +526,7 @@ class RestParametersDirective(Table):
                 rows.append(self.show_no_yaml_error())
         return rows, groups
 
-    def build_table(self):
+    def build_table(self) -> nodes.table:
         table = nodes.table()
         tgroup = nodes.tgroup(cols=len(self.headers))
         table += tgroup
@@ -535,7 +559,7 @@ class RestParametersDirective(Table):
         return table
 
 
-def rest_method_html(self, node):
+def rest_method_html(self: HTML5Translator, node: rest_method) -> None:
     tmpl = """
 <div class="operation-grp %(css_classes)s container">
 <div class="row">
@@ -576,7 +600,7 @@ def rest_method_html(self, node):
     raise nodes.SkipNode
 
 
-def rest_expand_all_html(self, node):
+def rest_expand_all_html(self: HTML5Translator, node: rest_expand_all) -> None:
     tmpl = """
 <div class="row">
 %(extra_js)s
@@ -601,15 +625,15 @@ def rest_expand_all_html(self, node):
     raise nodes.SkipNode
 
 
-def rest_method_text(self, node):
+def rest_method_text(self: TextTranslator, node: rest_method) -> None:
     raise nodes.SkipNode
 
 
-def rest_expand_all_text(self, node):
+def rest_expand_all_text(self: TextTranslator, node: rest_expand_all) -> None:
     raise nodes.SkipNode
 
 
-def create_mv_selector(node):
+def create_mv_selector(node: rest_expand_all) -> tuple[str, str]:
     mv_list = '<option value="" selected="selected">All</option>'
 
     for x in range(node['min_ver'], node['max_ver'] + 1):
@@ -642,7 +666,7 @@ Microversions
     return selector_tmpl % selector_content, js_tmpl % js_content
 
 
-def build_mv_item(major, micro, releases):
+def build_mv_item(major: int, micro: int, releases: dict[str, str]) -> str:
     version = f'{major}.{micro}'
     if version in releases:
         return f'<option value="{version}">{version} - {releases[version].capitalize()}</option>'  # noqa: E501
@@ -650,7 +674,7 @@ def build_mv_item(major, micro, releases):
         return f'<option value="{version}">{version}</option>'
 
 
-def resolve_rest_references(app, doctree):
+def resolve_rest_references(app: Sphinx, doctree: nodes.document) -> None:
     for node in doctree.traverse():
         if isinstance(node, rest_method):
             rest_node = node
@@ -683,7 +707,7 @@ def resolve_rest_references(app, doctree):
             gp.insert(idx, rest_method_section)
 
 
-def copy_assets(app, exception):
+def copy_assets(app: Sphinx, exception: Exception | None) -> None:
     assets = ('api-site.css', 'api-site.js')
     fonts = (
         'glyphicons-halflings-regular.ttf',
@@ -707,12 +731,12 @@ def copy_assets(app, exception):
         copyfile(os.path.join(source, 'assets', font), dest)
 
 
-def add_assets(app):
+def add_assets(app: Sphinx) -> None:
     app.add_css_file('api-site.css')
     app.add_js_file('api-site.js')
 
 
-def setup(app):
+def setup(app: Sphinx) -> dict[str, Any]:
     # Add some config options around microversions
     app.add_config_value('os_api_ref_max_microversion', '', 'env')
     app.add_config_value('os_api_ref_min_microversion', '', 'env')

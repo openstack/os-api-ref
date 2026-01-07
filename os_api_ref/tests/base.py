@@ -78,11 +78,15 @@ class OutputStreamCapture(fixtures.Fixture):
 
     @property
     def stderr(self):
-        return self.err._details["stderr"].as_text()
+        details = self.err._details
+        assert details is not None
+        return details["stderr"].as_text()
 
     @property
     def stdout(self):
-        return self.out._details["stdout"].as_text()
+        details = self.out._details
+        assert details is not None
+        return details["stdout"].as_text()
 
 
 class Timeout(fixtures.Fixture):

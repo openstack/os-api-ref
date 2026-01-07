@@ -2,9 +2,20 @@
 os-api-ref
 ==========
 
-.. image:: https://governance.openstack.org/tc/badges/os-api-ref.svg
+.. image:: https://governance.openstack.org/tc/badges/os-api-ref
+   :target: https://governance.openstack.org/tc/reference/projects/oslo.html
 
-.. Change things from this point on
+.. image:: https://img.shields.io/pypi/v/os-api-ref
+    :target: https://pypi.org/project/os-api-ref/
+    :alt: Latest Version
+
+.. image:: https://img.shields.io/pypi/dm/os-api-ref
+    :target: https://pypi.org/project/os-api-ref/
+    :alt: Downloads
+
+.. image:: https://img.shields.io/pypi/types/os-api-ref
+    :target: https://pypi.org/project/os-api-ref/
+    :alt: Typing Status
 
 Sphinx Extensions to support API reference sites in OpenStack
 
@@ -38,9 +49,8 @@ TODO
 
 A list, in no particular order, of things we should do in this
 project. If you would like to contribute to any of these please show
-up in ``#openstack-dev`` on IRC and ask for ``sdague`` or ``mugsie``
-to discuss or send an email to the openstack-discuss@lists.openstack.org list
-with [api] in the subject line.
+up in ``#openstack-dev`` on IRC or send an email to the
+openstack-discuss@lists.openstack.org list with ``[api]`` in the subject line.
 
 * Enhance documentation with more examples and best practices
 * Testing for the code
