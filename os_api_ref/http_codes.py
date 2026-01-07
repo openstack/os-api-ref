@@ -53,9 +53,7 @@ class HTTPResponseCodeDirective(Table):
             with open(fpath) as stream:
                 lookup = yaml.safe_load(stream)
         except OSError:
-            LOG.warning(
-                "Parameters file %s not found" % fpath,
-                (self.env.docname, None))
+            LOG.warning("Parameters file %s not found", fpath)
             return
         except yaml.YAMLError as exc:
             LOG.warning(exc)
@@ -208,8 +206,7 @@ class HTTPResponseCodeDirective(Table):
                 rows.append(trow)
         except AttributeError as exc:
             # if 'key' in locals():
-            LOG.warning("Failure on key: %s, values: %s. %s" %
-                        (code, desc, exc))
+            LOG.warning("Failure on key: %s, values: %s. %s", code, desc, exc)
             # else:
             #     rows.append(self.show_no_yaml_error())
         return rows, groups

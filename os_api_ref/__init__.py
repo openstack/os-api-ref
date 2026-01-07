@@ -229,9 +229,8 @@ class RestParametersDirective(Table):
             LOG.warning("Parameters file not found, %s", fpath,
                         location=(self.env.docname, None))
             return
-        except yaml.YAMLError as exc:
-            LOG.exception(exc_info=exc,
-                          msg="Error while parsing file [%s]." % fpath)
+        except yaml.YAMLError:
+            LOG.exception("Error while parsing file [%s].", fpath)
             raise
 
         if lookup:
