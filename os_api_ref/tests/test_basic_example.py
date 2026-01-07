@@ -43,12 +43,12 @@ class TestBasicExample(base.TestCase):
     def test_expand_all(self):
         """Do we get an expand all button like we expect."""
         content = str(self.soup.find(id='expand-all'))
-        example_button = ('<button class="btn btn-info btn-sm btn-expand-all" '
-                          'data-toggle="collapse" id="expand-all">'
-                          'Show All</button>')
-        self.assertEqual(
-            example_button,
-            content)
+        example_button = (
+            '<button class="btn btn-info btn-sm btn-expand-all" '
+            'data-toggle="collapse" id="expand-all">'
+            'Show All</button>'
+        )
+        self.assertEqual(example_button, content)
 
     def test_rest_method(self):
         """Do we get a REST method call block"""
@@ -56,20 +56,17 @@ class TestBasicExample(base.TestCase):
         # TODO(sdague): it probably would make sense to do this as a
         # whole template instead of parts.
         content = str(self.soup.find_all(class_='operation-grp'))
+        self.assertIn('<span class="fa fa-link"></span>', str(content))
+        self.assertIn('<span class="badge label-GET">GET</span>', str(content))
+        self.assertIn('<div class="endpoint-url">/servers</div>', str(content))
         self.assertIn(
-            '<span class="fa fa-link"></span>',
-            str(content))
-        self.assertIn(
-            '<span class="badge label-GET">GET</span>',
-            str(content))
-        self.assertIn(
-            '<div class="endpoint-url">/servers</div>',
-            str(content))
-        self.assertIn(
-            ('<button class="btn btn-info btn-sm btn-detail" '
-             'data-bs-target="#list-servers-detail" data-bs-toggle="collapse" '
-             'id="list-servers-detail-btn">detail</button>'),
-            str(content))
+            (
+                '<button class="btn btn-info btn-sm btn-detail" '
+                'data-bs-target="#list-servers-detail" data-bs-toggle="collapse" '  # noqa: E501
+                'id="list-servers-detail-btn">detail</button>'
+            ),
+            str(content),
+        )
 
     def test_parameters(self):
         """Do we get some parameters table"""

@@ -21,6 +21,5 @@ from os_api_ref.tests import base
 
 
 class TestOs_api_ref(base.TestCase):
-
     def test_something(self):
         pass

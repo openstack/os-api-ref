@@ -50,6 +50,7 @@ class with_app:
                 f(*args, app, app._status, app._warning, **kwargs)
 
                 app.cleanup()
+
         return newf
 
 
@@ -61,16 +62,19 @@ class OutputStreamCapture(fixtures.Fixture):
     runs instead. Useful to see what was happening during failed
     tests.
     """
+
     def setUp(self):
         super().setUp()
         if os.environ.get('OS_STDOUT_CAPTURE') in _TRUE_VALUES:
             self.out = self.useFixture(fixtures.StringStream('stdout'))
             self.useFixture(
-                fixtures.MonkeyPatch('sys.stdout', self.out.stream))
+                fixtures.MonkeyPatch('sys.stdout', self.out.stream)
+            )
         if os.environ.get('OS_STDERR_CAPTURE') in _TRUE_VALUES:
             self.err = self.useFixture(fixtures.StringStream('stderr'))
             self.useFixture(
-                fixtures.MonkeyPatch('sys.stderr', self.err.stream))
+                fixtures.MonkeyPatch('sys.stderr', self.err.stream)
+            )
 
     @property
     def stderr(self):
@@ -111,12 +115,10 @@ class Timeout(fixtures.Fixture):
 
 
 class TestCase(testtools.TestCase):
-
     """Test case base class for all unit tests."""
 
     def setUp(self):
         """Run before each test method to initialize test environment."""
         super().setUp()
-        self.useFixture(Timeout(
-            os.environ.get('OS_TEST_TIMEOUT', 0)))
+        self.useFixture(Timeout(os.environ.get('OS_TEST_TIMEOUT', 0)))
         self.useFixture(OutputStreamCapture())

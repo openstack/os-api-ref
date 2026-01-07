@@ -26,7 +26,6 @@ HTTP_YAML_CACHE = {}
 
 
 class HTTPResponseCodeDirective(Table):
-
     headers = ["Code", "Reason"]
 
     status_types = ("success", "error")
@@ -71,14 +70,16 @@ class HTTPResponseCodeDirective(Table):
             error = self.state_machine.reporter.error(
                 'No parameters defined',
                 nodes.literal_block(self.block_text, self.block_text),
-                line=self.lineno)
+                line=self.lineno,
+            )
             return [error]
 
         if not len(self.arguments) >= 2:
             error = self.state_machine.reporter.error(
-                '%s' % self.arguments,
+                f'{self.arguments}',
                 nodes.literal_block(self.block_text, self.block_text),
-                line=self.lineno)
+                line=self.lineno,
+            )
             return [error]
 
         _, status_defs_file = self.env.relfn2path(self.arguments.pop())
@@ -90,10 +91,10 @@ class HTTPResponseCodeDirective(Table):
 
         if status_type not in self.status_types:
             error = self.state_machine.reporter.error(
-                'Type {} is not one of {}'.format(
-                    status_type, self.status_types),
+                f'Type {status_type} is not one of {self.status_types}',
                 nodes.literal_block(self.block_text, self.block_text),
-                line=self.lineno)
+                line=self.lineno,
+            )
             return [error]
 
         self.yaml = self._load_codes()
@@ -115,8 +116,7 @@ class HTTPResponseCodeDirective(Table):
         table_node = self.build_table()
         self.add_name(table_node)
 
-        title_block = nodes.title(
-            text=status_type.capitalize())
+        title_block = nodes.title(text=status_type.capitalize())
 
         section = nodes.section(ids=title_block)
         section += title_block
@@ -134,16 +134,19 @@ class HTTPResponseCodeDirective(Table):
             if isinstance(item, int):
                 new_content.append((item, self.status_defs[item]['default']))
             else:
-                try:
-                    for code, reason in item.items():
+                for code, reason in item.items():
+                    try:
                         new_content.append(
                             (code, self.status_defs[code][reason])
                         )
-                except KeyError:
-                    LOG.warning(
-                        "Could not find {} for code {}".format(reason, code))
-                    new_content.append(
-                        (code, self.status_defs[code]['default']))
+                    except KeyError:
+                        LOG.warning(
+                            "Could not find %(reason)s for code %(code)s",
+                            {'reason': reason, 'code': code},
+                        )
+                        new_content.append(
+                            (code, self.status_defs[code]['default'])
+                        )
 
         return new_content
 
@@ -166,8 +169,9 @@ class HTTPResponseCodeDirective(Table):
 
         row_node = nodes.row()
         thead += row_node
-        row_node.extend(nodes.entry(h, nodes.paragraph(text=h))
-                        for h in self.headers)
+        row_node.extend(
+            nodes.entry(h, nodes.paragraph(text=h)) for h in self.headers
+        )
 
         tbody = nodes.tbody()
         tgroup += tbody
@@ -195,7 +199,6 @@ class HTTPResponseCodeDirective(Table):
         try:
             # LOG.info("Parsed content is: %s" % self.yaml)
             for code, desc in self.yaml:
-
                 h_code = http_code()
                 h_code['code'] = code
                 h_code['title'] = self.CODES.get(code, 'Unknown')
@@ -205,10 +208,7 @@ class HTTPResponseCodeDirective(Table):
                 trow += self.add_desc_col(desc)
                 rows.append(trow)
         except AttributeError as exc:
-            # if 'key' in locals():
             LOG.warning("Failure on key: %s, values: %s. %s", code, desc, exc)
-            # else:
-            #     rows.append(self.show_no_yaml_error())
         return rows, groups
 
 
@@ -239,4 +239,5 @@ class http_code(nodes.Part, nodes.Element):
     output formatter for this node type, but it's not yet a
     priority. Contributions welcomed.
     """
+
     pass

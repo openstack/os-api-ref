@@ -45,62 +45,77 @@ class TestWarnings(base.TestCase):
     def test_out_of_order(self):
         """Do we get an out of order naming warning."""
         self.assertIn(
-            ("WARNING: Parameters out of order ``name2`` "
-             "should be after ``name``"),
-            self.warning)
+            (
+                "WARNING: Parameters out of order ``name2`` "
+                "should be after ``name``"
+            ),
+            self.warning,
+        )
 
     def test_missing_lookup_name(self):
         """Warning when missing a lookup key in parameter file."""
         self.assertIn(
             ("WARNING: No field definition for ``lookup_key_name`` found in "),
-            self.warning)
+            self.warning,
+        )
 
     def test_missing_field(self):
         """Warning when missing type field in parameter file."""
         # py312 changes string interpretation of OrderedDict.
         # Prevent such failures by using OrderedDict directly
-        cmp_data = OrderedDict({
-            "description": "name_1 is missing type field.\n",
-            "in": "body",
-            "required": True
-        })
+        cmp_data = OrderedDict(
+            {
+                "description": "name_1 is missing type field.\n",
+                "in": "body",
+                "required": True,
+            }
+        )
         self.assertIn(
-            ("WARNING: Failure on key: name, values: " +
-             f"{cmp_data}. " +
-             "'NoneType' object has no attribute 'split'"),
-            self.warning)
+            (
+                f"WARNING: Failure on key: name, values: {cmp_data}. "
+                f"'NoneType' object has no attribute 'split'"
+            ),
+            self.warning,
+        )
 
     def test_invalid_parameter_definition(self):
         """Warning when parameter definition is invalid."""
         self.assertIn(
-            ("WARNING: Invalid parameter definition ``invalid_name``. " +
-             "Expected format: ``name: reference``. "),
-            self.warning)
+            (
+                "WARNING: Invalid parameter definition ``invalid_name``. "
+                "Expected format: ``name: reference``. "
+            ),
+            self.warning,
+        )
 
     def test_empty_parameter_file(self):
         """Warning when parameter file exists but is empty."""
-        self.assertIn(
-            ("WARNING: Parameters file is empty"),
-            self.warning)
+        self.assertIn(("WARNING: Parameters file is empty"), self.warning)
 
     def test_no_parameters_set(self):
         """Error when parameters are not set in rest_parameters stanza."""
         self.assertIn(
-            ("No parameters defined\n\n.." +
-             " rest_parameters:: parameters.yaml"),
-            self.warning)
+            ("No parameters defined\n\n.. rest_parameters:: parameters.yaml"),
+            self.warning,
+        )
 
     def test_parameter_file_not_exist(self):
         """Error when parameter file does not exist"""
         self.assertIn(
-            ("No parameters defined\n\n.." +
-             " rest_parameters:: no_parameters.yaml"),
-            self.warning)
+            (
+                "No parameters defined\n\n.."
+                " rest_parameters:: no_parameters.yaml"
+            ),
+            self.warning,
+        )
 
     def test_missing_path_parameter_in_stanza(self):
         """Warning when path param not found in rest_parameter stanza."""
 
         self.assertIn(
-            ("WARNING: No path parameter ``b_id`` found in" +
-             " rest_parameter stanza.\n"),
-            self.warning)
+            (
+                "WARNING: No path parameter ``b_id`` found in"
+                " rest_parameter stanza.\n"
+            ),
+            self.warning,
+        )

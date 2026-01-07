@@ -29,8 +29,9 @@ class TestMicroversions(base.TestCase):
     examples, so if someone breaks something we know.
     """
 
-    @base.with_app(buildername='html',
-                   srcdir=base.example_dir('microversions'))
+    @base.with_app(
+        buildername='html', srcdir=base.example_dir('microversions')
+    )
     def setUp(self, app, status, warning):
         super().setUp()
         self.app = app
@@ -47,12 +48,14 @@ class TestMicroversions(base.TestCase):
         self.assertRegex(
             str(content[0]),
             '^<div class="operation-grp rp_min_ver_2_17 rp_max_ver_2_19 '
-            '?container"')
+            '?container"',
+        )
         content = self.soup.find_all(class_='rp_max_ver_2_19')
         self.assertRegex(
             str(content[0]),
             '^<div class="operation-grp rp_min_ver_2_17 rp_max_ver_2_19 '
-            '?container"')
+            '?container"',
+        )
 
     def test_parameters_table(self):
         """Test that min / max mv css class attributes are set in params"""
@@ -91,7 +94,6 @@ class TestMicroversions(base.TestCase):
         self.assertIn(table, self.content)
 
     def test_mv_selector(self):
-
         button_selectors = '<option selected="selected" value="">All</option><option value="2.1">2.1</option><option value="2.2">2.2</option><option value="2.3">2.3</option><option value="2.4">2.4</option><option value="2.5">2.5</option><option value="2.6">2.6</option><option value="2.7">2.7</option><option value="2.8">2.8</option><option value="2.9">2.9</option><option value="2.10">2.10</option><option value="2.11">2.11</option><option value="2.12">2.12</option><option value="2.13">2.13</option><option value="2.14">2.14</option><option value="2.15">2.15</option><option value="2.16">2.16</option><option value="2.17">2.17</option><option value="2.18">2.18</option><option value="2.19">2.19</option><option value="2.20">2.20</option><option value="2.21">2.21</option><option value="2.22">2.22</option><option value="2.23">2.23</option><option value="2.24">2.24</option><option value="2.25">2.25</option><option value="2.26">2.26</option><option value="2.27">2.27</option><option value="2.28">2.28</option><option value="2.29">2.29</option><option value="2.30">2.30</option>'  # noqa
         self.assertIn(button_selectors, self.content)
 

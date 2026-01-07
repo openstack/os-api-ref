@@ -29,8 +29,7 @@ from os_api_ref.http_codes import http_code_html
 from os_api_ref.http_codes import http_code_text
 from os_api_ref.http_codes import HTTPResponseCodeDirective
 
-__version__ = pbr.version.VersionInfo(
-    'os_api_ref').version_string()
+__version__ = pbr.version.VersionInfo('os_api_ref').version_string()
 
 LOG = logging.getLogger(__name__)
 
@@ -67,12 +66,14 @@ in both naming and ordering of parameters at every declaration.
 
 
 def ordered_load(
-        stream, Loader=yaml.SafeLoader, object_pairs_hook=OrderedDict):
+    stream, Loader=yaml.SafeLoader, object_pairs_hook=OrderedDict
+):
     """Load yaml as an ordered dict
 
     This allows us to inspect the order of the file on disk to make
     sure it was correct by our rules.
     """
+
     class OrderedLoader(Loader):
         pass
 
@@ -81,14 +82,15 @@ def ordered_load(
         return object_pairs_hook(loader.construct_pairs(node))
 
     OrderedLoader.add_constructor(
-        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
-        construct_mapping)
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, construct_mapping
+    )
     # for parameters.yaml we treat numbers (especially version
     # numbers) as strings. So that microversion specification of 2.20
     # and 2.2 don't get confused.
     OrderedLoader.add_constructor(
         'tag:yaml.org,2002:float',
-        yaml.constructor.SafeConstructor.construct_yaml_str)
+        yaml.constructor.SafeConstructor.construct_yaml_str,
+    )
 
     return yaml.load(stream, OrderedLoader)
 
@@ -110,6 +112,7 @@ class rest_method(nodes.Part, nodes.Element):
     output formatter for this node type, but it's not yet a
     priority. Contributions welcomed.
     """
+
     pass
 
 
@@ -121,6 +124,7 @@ class rest_expand_all(nodes.Part, nodes.Element):
     all button. It is automatically inserted at the top of the page
     for API ref documents.
     """
+
     pass
 
 
@@ -151,14 +155,13 @@ class RestExpandAllDirective(rst.Directive):
 
 
 class RestMethodDirective(rst.Directive):
-
     # this enables content in the directive
     has_content = True
 
     @staticmethod
     def find_param(content, name):
         for line in content:
-            if ("%s: " % name) in line:
+            if f"{name}: " in line:
                 _, value = line.split(': ')
                 return value.rstrip().lstrip()
         return None
@@ -187,11 +190,13 @@ class RestMethodDirective(rst.Directive):
         node['target'] = self.state.parent.attributes['ids'][0]
         node['css_classes'] = ""
         if node['min_version']:
-            node['css_classes'] += "rp_min_ver_%s " % (
-                str(node['min_version']).replace('.', '_'))
+            node['css_classes'] += "rp_min_ver_{} ".format(
+                str(node['min_version']).replace('.', '_')
+            )
         if node['max_version']:
-            node['css_classes'] += "rp_max_ver_%s " % (
-                str(node['max_version']).replace('.', '_'))
+            node['css_classes'] += "rp_max_ver_{} ".format(
+                str(node['max_version']).replace('.', '_')
+            )
 
         # We need to build a temporary target that we can replace
         # later in the processing to get the TOC to resolve correctly.
@@ -213,7 +218,6 @@ YAML_CACHE = {}
 
 
 class RestParametersDirective(Table):
-
     headers = ["Name", "In", "Type", "Description"]
 
     def _load_param_file(self, fpath):
@@ -226,18 +230,28 @@ class RestParametersDirective(Table):
             with open(fpath) as stream:
                 lookup = ordered_load(stream)
         except OSError:
-            LOG.warning("Parameters file not found, %s", fpath,
-                        location=(self.env.docname, None))
+            LOG.warning(
+                "Parameters file not found, %s",
+                fpath,
+                location=(self.env.docname, None),
+            )
             return
         except yaml.YAMLError:
-            LOG.exception("Error while parsing file [%s].", fpath)
+            LOG.exception(
+                "Error while parsing file [%s].",
+                fpath,
+                location=(self.env.docname, None),
+            )
             raise
 
         if lookup:
             self._check_yaml_sorting(fpath, lookup)
         else:
-            LOG.warning("Parameters file is empty, %s", fpath,
-                        location=(self.env.docname, None))
+            LOG.warning(
+                "Parameters file is empty, %s",
+                fpath,
+                location=(self.env.docname, None),
+            )
             return
 
         YAML_CACHE[fpath] = lookup
@@ -259,17 +273,21 @@ class RestParametersDirective(Table):
         last = None
         for key, value in yaml_data.items():
             if not isinstance(value, dict):
-                raise Exception('Expected a dict for {0}; got {0}={1}).\n'
-                                'You probably have indentation typo in your'
-                                'YAML source'.format(key, value))
+                raise Exception(
+                    f'Expected a dict for {key}; got {key}={value}).\n'
+                    'You probably have indentation typo in your'
+                    'YAML source'
+                )
 
             # use of an invalid 'in' value
             if value['in'] not in sections:
-                LOG.warning("``%s`` is not a valid value for 'in' (must be "
-                            "one of: %s). (see ``%s``)",
-                            value['in'],
-                            ", ".join(sorted(sections.keys())),
-                            key)
+                LOG.warning(
+                    "``%s`` is not a valid value for 'in' (must be "
+                    "one of: %s). (see ``%s``)",
+                    value['in'],
+                    ", ".join(sorted(sections.keys())),
+                    key,
+                )
                 continue
 
             if last is None:
@@ -279,13 +297,23 @@ class RestParametersDirective(Table):
             current_section = value['in']
             last_section = last[1]['in']
             if sections[current_section] < sections[last_section]:
-                LOG.warning("Section out of order. All parameters in section "
-                            "``%s`` should be after section ``%s``. (see "
-                            "``%s``)", last_section, current_section, last[0])
-            if (sections[value['in']] == sections[last[1]['in']] and
-                key.lower() < last[0].lower()):
-                LOG.warning("Parameters out of order ``%s`` should be after "
-                            "``%s``", last[0], key)
+                LOG.warning(
+                    "Section out of order. All parameters in section "
+                    "``%s`` should be after section ``%s``. (see "
+                    "``%s``)",
+                    last_section,
+                    current_section,
+                    last[0],
+                )
+            if (
+                sections[value['in']] == sections[last[1]['in']]
+                and key.lower() < last[0].lower()
+            ):
+                LOG.warning(
+                    "Parameters out of order ``%s`` should be after ``%s``",
+                    last[0],
+                    key,
+                )
             last = (key, value)
 
     def yaml_from_file(self, fpath):
@@ -304,11 +332,16 @@ class RestParametersDirective(Table):
         new_content = list()
         for paramlist in parsed:
             if not isinstance(paramlist, dict):
-                location = (self.state_machine.node.source,
-                            self.state_machine.node.line)
-                LOG.warning("Invalid parameter definition ``%s``. Expected "
-                            "format: ``name: reference``. Skipping.",
-                            paramlist, location=location)
+                location = (
+                    self.state_machine.node.source,
+                    self.state_machine.node.line,
+                )
+                LOG.warning(
+                    "Invalid parameter definition ``%s``. Expected "
+                    "format: ``name: reference``. Skipping.",
+                    paramlist,
+                    location=location,
+                )
                 continue
             for name, ref in paramlist.items():
                 if ref in lookup:
@@ -319,14 +352,20 @@ class RestParametersDirective(Table):
                     # used this way, however it does provide a way to
                     # track down where the parameters list is that is
                     # wrong. So it's good enough for now.
-                    location = (self.state_machine.node.source,
-                                self.state_machine.node.line)
-                    LOG.warning("No field definition for ``%s`` found in "
-                                "``%s``. Skipping.", ref, fpath)
+                    location = (
+                        self.state_machine.node.source,
+                        self.state_machine.node.line,
+                    )
+                    LOG.warning(
+                        "No field definition for ``%s`` found in "
+                        "``%s``. Skipping.",
+                        ref,
+                        fpath,
+                    )
 
                 # Check for path params in stanza
                 for i, param in enumerate(self.env.path_params):
-                    if (param.rstrip('}').lstrip('{')) == name:
+                    if param.rstrip('}').lstrip('{') == name:
                         del self.env.path_params[i]
                         break
                     else:
@@ -336,10 +375,15 @@ class RestParametersDirective(Table):
             # Warn that path parameters are not set in rest_parameter
             # stanza and will not appear in the generated table.
             for param in self.env.path_params:
-                location = (self.state_machine.node.source,
-                            self.state_machine.node.line)
-                LOG.warning("No path parameter ``%s`` found in rest_parameter"
-                            " stanza.\n", param.rstrip('}').lstrip('{'))
+                location = (
+                    self.state_machine.node.source,
+                    self.state_machine.node.line,
+                )
+                LOG.warning(
+                    "No path parameter ``%s`` found in rest_parameter"
+                    " stanza.\n",
+                    param.rstrip('}').lstrip('{'),
+                )
 
         self.yaml = new_content
 
@@ -352,14 +396,16 @@ class RestParametersDirective(Table):
             error = self.state_machine.reporter.error(
                 'No parameters defined',
                 nodes.literal_block(self.block_text, self.block_text),
-                line=self.lineno)
+                line=self.lineno,
+            )
             return [error]
 
         if not len(self.arguments) >= 1:
             error = self.state_machine.reporter.error(
                 'No reference file defined',
                 nodes.literal_block(self.block_text, self.block_text),
-                line=self.lineno)
+                line=self.lineno,
+            )
             return [error]
 
         # NOTE(sdague): it's important that we pop the arg otherwise
@@ -399,6 +445,7 @@ class RestParametersDirective(Table):
         return rows, groups
 
         # Add a column for a field. In order to have the RST inside
+
     # these fields get rendered, we need to use the
     # ViewList. Note, ViewList expects a list of lines, so chunk
     # up our content as a list to make it happy.
@@ -410,7 +457,7 @@ class RestParametersDirective(Table):
 
     def show_no_yaml_error(self):
         trow = nodes.row(classes=["no_yaml"])
-        trow += self.add_col("No yaml found %s" % self.yaml_file)
+        trow += self.add_col(f"No yaml found {self.yaml_file}")
         trow += self.add_col("")
         trow += self.add_col("")
         trow += self.add_col("")
@@ -426,15 +473,16 @@ class RestParametersDirective(Table):
                 desc = values.get('description', '')
                 classes = []
                 if min_version:
-                    desc += ("\n\n**New in version %s**\n" % min_version)
-                    min_ver_css_name = ("rp_min_ver_" +
-                                        str(min_version).replace('.', '_'))
+                    desc += f"\n\n**New in version {min_version}**\n"
+                    min_ver_css_name = "rp_min_ver_" + str(
+                        min_version
+                    ).replace('.', '_')
                     classes.append(min_ver_css_name)
                 if max_version:
-                    desc += ("\n\n**Available until version %s**\n" %
-                             max_version)
-                    max_ver_css_name = ("rp_max_ver_" +
-                                        str(max_version).replace('.', '_'))
+                    desc += f"\n\n**Available until version {max_version}**\n"
+                    max_ver_css_name = "rp_max_ver_" + str(
+                        max_version
+                    ).replace('.', '_')
                     classes.append(max_ver_css_name)
                 trow = nodes.row(classes=classes)
                 name = key
@@ -447,8 +495,9 @@ class RestParametersDirective(Table):
                 rows.append(trow)
         except AttributeError as exc:
             if 'key' in locals():
-                LOG.warning("Failure on key: %s, values: %s. %s",
-                            key, values, exc)
+                LOG.warning(
+                    "Failure on key: %s, values: %s. %s", key, values, exc
+                )
             else:
                 rows.append(self.show_no_yaml_error())
         return rows, groups
@@ -472,8 +521,9 @@ class RestParametersDirective(Table):
 
         row_node = nodes.row()
         thead += row_node
-        row_node.extend(nodes.entry(h, nodes.paragraph(text=h))
-                        for h in self.headers)
+        row_node.extend(
+            nodes.entry(h, nodes.paragraph(text=h)) for h in self.headers
+        )
 
         tbody = nodes.tbody()
         tgroup += tbody
@@ -519,12 +569,8 @@ def rest_method_html(self, node):
 </div>
 </div>"""
 
-    node['url'] = node['url'].replace(
-        '{',
-        '<span class="path_parameter">{')
-    node['url'] = node['url'].replace(
-        '}',
-        '}</span>')
+    node['url'] = node['url'].replace('{', '<span class="path_parameter">{')
+    node['url'] = node['url'].replace('}', '}</span>')
 
     self.body.append(tmpl % node)
     raise nodes.SkipNode
@@ -564,7 +610,6 @@ def rest_expand_all_text(self, node):
 
 
 def create_mv_selector(node):
-
     mv_list = '<option value="" selected="selected">All</option>'
 
     for x in range(node['min_ver'], node['max_ver'] + 1):
@@ -590,25 +635,19 @@ Microversions
 </script>
 """
 
-    selector_content = {
-        'mv_list': mv_list
-    }
+    selector_content = {'mv_list': mv_list}
 
-    js_content = {
-        'min': node['min_ver'],
-        'max': node['max_ver']
-    }
+    js_content = {'min': node['min_ver'], 'max': node['max_ver']}
 
     return selector_tmpl % selector_content, js_tmpl % js_content
 
 
 def build_mv_item(major, micro, releases):
-    version = "%d.%d" % (major, micro)
+    version = f'{major}.{micro}'
     if version in releases:
-        return '<option value="{}">{} - {}</option>'.format(
-            version, version, releases[version].capitalize())
+        return f'<option value="{version}">{version} - {releases[version].capitalize()}</option>'  # noqa: E501
     else:
-        return '<option value="{}">{}</option>'.format(version, version)
+        return f'<option value="{version}">{version}</option>'
 
 
 def resolve_rest_references(app, doctree):
@@ -632,8 +671,9 @@ def resolve_rest_references(app, doctree):
             # rest_method_section has basically had a dummy id up
             # until this point just to keep it from colliding with
             # it's parent.
-            rest_section.attributes['ids'][0] = (
-                "%s-detail" % rest_section.attributes['ids'][0])
+            rest_section.attributes['ids'][0] = "{}-detail".format(
+                rest_section.attributes['ids'][0]
+            )
             rest_method_section.attributes['ids'][0] = rest_node['target']
 
             # Pop the overall section into it's grand parent,
@@ -647,7 +687,7 @@ def copy_assets(app, exception):
     assets = ('api-site.css', 'api-site.js')
     fonts = (
         'glyphicons-halflings-regular.ttf',
-        'glyphicons-halflings-regular.woff'
+        'glyphicons-halflings-regular.woff',
     )
     builders = ('html', 'readthedocs', 'readthedocssinglehtmllocalmedia')
     if app.builder.name not in builders or exception:
@@ -680,12 +720,19 @@ def setup(app):
     # TODO(sdague): if someone wants to support latex/pdf, or man page
     # generation using these stanzas, here is where you'd need to
     # specify content specific renderers.
-    app.add_node(rest_method, html=(rest_method_html, None),
-                 text=(rest_method_text, None))
-    app.add_node(rest_expand_all, html=(rest_expand_all_html, None),
-                 text=(rest_expand_all_text, None))
-    app.add_node(http_code, html=(http_code_html, None),
-                 text=(http_code_text, None))
+    app.add_node(
+        rest_method,
+        html=(rest_method_html, None),
+        text=(rest_method_text, None),
+    )
+    app.add_node(
+        rest_expand_all,
+        html=(rest_expand_all_html, None),
+        text=(rest_expand_all_text, None),
+    )
+    app.add_node(
+        http_code, html=(http_code_html, None), text=(http_code_text, None)
+    )
 
     # This specifies all our directives that we're adding
     app.add_directive('rest_parameters', RestParametersDirective)
