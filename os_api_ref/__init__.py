@@ -13,9 +13,11 @@
 from collections.abc import Iterable
 from collections import OrderedDict
 import hashlib
+import importlib.metadata
 import os
 import re
-from typing import Any
+from typing import Any, cast
+import warnings
 
 from docutils import nodes
 from docutils.parsers import rst
@@ -35,7 +37,21 @@ from os_api_ref.http_codes import http_code_html
 from os_api_ref.http_codes import http_code_text
 from os_api_ref.http_codes import HTTPResponseCodeDirective
 
-__version__ = pbr.version.VersionInfo('os_api_ref').version_string()
+
+def __getattr__(name: str) -> str:
+    if name == '__version__':
+        warnings.warn(
+            "Accessing os_api_ref.__version__ is deprecated and will be "
+            "removed in a future release. Use importlib.metadata instead: "
+            "importlib.metadata.version('os-api-ref')",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return cast(
+            str, pbr.version.VersionInfo('os_api_ref').version_string()
+        )
+    raise AttributeError(f"module 'os_api_ref' has no attribute {name!r}")
+
 
 LOG = logging.getLogger(__name__)
 
@@ -779,5 +795,5 @@ def setup(app: Sphinx) -> dict[str, Any]:
     return {
         'parallel_read_safe': True,
         'parallel_write_safe': True,
-        'version': __version__,
+        'version': importlib.metadata.version('os_api_ref'),
     }
