@@ -85,7 +85,7 @@ def ordered_load(stream: Any) -> OrderedDict[str, Any]:
         loader: OrderedLoader, node: yaml.MappingNode
     ) -> OrderedDict[str, Any]:
         loader.flatten_mapping(node)
-        pairs = loader.construct_pairs(node)  # type: ignore[no-untyped-call]
+        pairs = loader.construct_pairs(node)
         return OrderedDict(pairs)
 
     OrderedLoader.add_constructor(
