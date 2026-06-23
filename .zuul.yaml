@@ -1,3 +1,5 @@
+---
+
 - job:
     name: os-api-ref-nova-src
     parent: build-openstack-api-ref
@@ -13,6 +15,7 @@
 - project:
     templates:
       - openstack-python3-jobs
+      - openstack-python3-next-jobs
       - check-requirements
       - publish-openstack-docs-pti
     check:
